@@ -1,0 +1,13 @@
+#N canvas 743 346 323 231 12;
+#X obj 47 66 unpack f f;
+#X obj 114 94 array get \$1 0 1;
+#X obj 47 126 array get \$1 0 1;
+#X obj 47 151 pack f f;
+#X obj 47 176 outlet;
+#X obj 47 39 inlet pair;
+#X connect 0 0 2 0;
+#X connect 0 1 1 0;
+#X connect 1 0 3 1;
+#X connect 2 0 3 0;
+#X connect 3 0 4 0;
+#X connect 5 0 0 0;
