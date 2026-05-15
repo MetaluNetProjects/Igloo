@@ -72,6 +72,24 @@ public:
         }
     }
 
+    void play_at(int time_ms, float _step_ms) {
+        step = 0;
+        start_time_ms = time_ms;
+        step_ms = _step_ms;
+        if(start_time_ms > now_ms()) {
+            playing = true;
+            fraise_printf("play %d %f\n", start_time_ms, step_ms);
+        }
+    }
+
+    void stop() {
+        playing = false;
+    }
+
+    bool is_playing() {
+        return playing;
+    }
+
     void fraise_receive() {
         char command = fraise_get_uint8();
         switch(command) {
@@ -86,14 +104,12 @@ public:
             break;
         case 2: // play at
             if(playing) break;
-            {
-                start_time_ms = fraise_get_int32() * 1000 + fraise_get_int16();
-                step_ms = fraise_get_int32() / 1000.0;
-                if(start_time_ms > now_ms()) playing = true;
-            }
+            start_time_ms = fraise_get_int32() * 1000 + fraise_get_int16();
+            step_ms = fraise_get_int32() / 1000.0;
+            play_at(start_time_ms, step_ms);
             break;
         case 3: // stop
-            playing = 0;
+            stop();
             break;
         }
     }

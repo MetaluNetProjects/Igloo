@@ -53,9 +53,11 @@ float setPoint;
 
 PID pid(&position, &pwm, &setPoint, PID_KP, PID_KI, PID_KD, P_ON_E, DIRECT);
 Ramp ramp(RAMP_ACCEL, RAMP_MAXSPEED);
-bool ramp_to_pid = false;
+//bool ramp_to_pid = false;
 
 TrajTable table;
+int play_time_ms = 0;
+float play_ms_step = 10.0;
 
 enum class State{manual, ramp, table, error} state = State::manual, next_state = state;
 
@@ -112,7 +114,7 @@ void enableMotorControl(bool enable) {
         ramp.set(setPoint);
     }
     //pid.SetMode(enable ? 1 : 0);
-    ramp_to_pid = enable;
+    //ramp_to_pid = enable;
 }
 
 int get_motor_current_mA(bool update = false) {
@@ -168,9 +170,13 @@ void motorcontrol_update() {
     position = encoder.get_count();
     if(pid.Compute()) {
         ramp.compute();
-        if(ramp_to_pid) { 
+        if(state == State::ramp) { 
             setPoint = ramp.get_position();
             motor_check_stalled();
+        }
+        else if(state == State::table) {
+            setPoint = table.current_value();
+            //fraise_printf("l setPoint from table %f\n", setPoint);
         }
         motor_updatepwm();
     }
@@ -207,6 +213,7 @@ void state_update() {
             break;
         case State::table:
             state = State::manual;
+            table.stop();
             if(change_state_time == at_the_end_of_time) {
                 int stop_time_ms = 3000.0 * pwm / 32768.0; // stop in maximum 3sec
                 motor.goto_pwm_ms(pwm = 0, stop_time_ms);
@@ -228,8 +235,12 @@ void state_update() {
                 enableMotorControl(true);
                 break;
             case State::table:
-                break;
+                table.stop();
+                encoder.set_count(0);
                 enableMotorControl(true);
+                pid.SetMode(1);
+                table.play_at(play_time_ms, play_ms_step);
+                break;
             case State::error:
                 enableMotorControl(false);
                 pwm = 0;
@@ -238,9 +249,20 @@ void state_update() {
         }
     }
 
-    if(state == State::error) {
+    switch(state) {
+    case State::manual:
+        break;
+    case State::ramp:
+        break;
+    case State::table:
+        if(! table.is_playing()) {
+            next_state = State::manual;
+        }
+        break;
+    case State::error:
         enableMotorControl(false);
         pwm = 0;
+        break;
     }
 
     static absolute_time_t nextSendTime = 0;
@@ -261,7 +283,7 @@ void state_prepare_change(int stateid) {
 
 void ramp_to(float dest) {
     ramp.set_destination(dest);
-    if(ramp_to_pid) pid.SetMode(1);
+    if(state == State::ramp) pid.SetMode(1);
 }
 
 void loop() {
@@ -300,6 +322,11 @@ void fraise_receivebytes(const char* data, uint8_t len) {
         break;
     case 20: // CHANGE STATE
         state_prepare_change(fraise_get_uint8());
+        break;
+    case 25: // START TABLE READ
+        play_time_ms = fraise_get_int32() * 1000 + fraise_get_int16();
+        play_ms_step = fraise_get_int32() / 1000.0;
+        next_state = State::table;
         break;
     case 30: // CLEAR ERROR
         if(state == State::error) {
