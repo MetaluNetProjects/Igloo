@@ -40,6 +40,15 @@ public:
         accel = _accel;
     }
 
+    bool is_stopped(){
+        return position == destination && speed == 0.0;
+    }
+
+    void stop() {
+        float stop_distance = abs(speed) * speed / (2.0 * accel);
+        set_destination(position + stop_distance);
+    }
+
     void compute() {
         float error = destination - position;
         float stop_distance = abs(speed) * speed / (2.0 * accel);

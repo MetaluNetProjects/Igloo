@@ -14,7 +14,7 @@
 
 class UDPServer {
 private:
-    using TableCallback = std::function<void(int)>;
+    using TableCallback = std::function<void(int, int)>;
     struct udp_pcb* server = NULL;
     struct udp_pcb* client = NULL;
     int server_bound = -1;
@@ -30,6 +30,7 @@ private:
         bool started = false;
         uint8_t *data = nullptr;
         int len = 0;
+        int received_len = 0;
         TableCallback start_callback = nullptr;
         TableCallback end_callback = nullptr;
     };
@@ -102,19 +103,24 @@ private:
         case MessageType::table_start:
         case MessageType::table_cont:
         case MessageType::table_end:
-            if (p->tot_len > 4) {
+            if (p->tot_len > 5) {
                 int table_num = pbuf_get_at(p, n++);
-                int offset = (pbuf_get_at(p, n++) << 8) + pbuf_get_at(p, n++);
+                int offset = (pbuf_get_at(p, n++) << 16) + (pbuf_get_at(p, n++) << 8) + pbuf_get_at(p, n++);
                 if(table_num >= NUM_TABLES || tables[table_num].data == nullptr) break;
-                if(!tables[table_num].started && command != MessageType::table_start) break;
-                tables[table_num].started = (command != MessageType::table_end);
-                if(command == MessageType::table_start && tables[table_num].start_callback)
-                    tables[table_num].start_callback(table_num);
-                int max_len = MAX(tables[table_num].len - offset, 0);
+                TableDef& table = tables[table_num];
+                if(!table.started && command != MessageType::table_start) break;
+                table.started = (command != MessageType::table_end);
+                if(command == MessageType::table_start) {
+                    table.received_len = 0;
+                    if(table.start_callback) table.start_callback(table_num, 0);
+                }
+                int max_len = MAX(table.len - offset, 0);
+                //fraise_printf("l maxlen %d off %d total %d\n", max_len, offset, table.len);
                 max_len = MIN(p->tot_len - n, max_len);
-                int sent = pbuf_copy_partial(p, tables[table_num].data + offset, max_len, n);
-                if(command == MessageType::table_end && tables[table_num].end_callback)
-                    tables[table_num].end_callback(table_num);
+                int sent = pbuf_copy_partial(p, table.data + offset, max_len, n);
+                table.received_len += sent;
+                if(command == MessageType::table_end && table.end_callback)
+                    table.end_callback(table_num, table.received_len);
 
                 struct pbuf *retp = pbuf_alloc(PBUF_TRANSPORT, 3, PBUF_RAM);
                 uint8_t *retbuf = (uint8_t *)retp->payload;

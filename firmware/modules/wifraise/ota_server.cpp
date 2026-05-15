@@ -45,7 +45,7 @@ typedef struct TCP_UPDATE_SERVER_T_ {
 
 typedef struct uf2_block uf2_block_t;
 
-TCP_UPDATE_SERVER_T *state;
+static TCP_UPDATE_SERVER_T *state;
 
 static TCP_UPDATE_SERVER_T* tcp_update_server_init(void) {
     TCP_UPDATE_SERVER_T *state = (TCP_UPDATE_SERVER_T *)calloc(1, sizeof(TCP_UPDATE_SERVER_T));
@@ -55,7 +55,6 @@ static TCP_UPDATE_SERVER_T* tcp_update_server_init(void) {
     }
     return state;
 }
-
 
 static __attribute__((aligned(4))) uint8_t workarea[4 * 1024];
 
