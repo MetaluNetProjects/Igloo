@@ -17,9 +17,11 @@
 
 #include "ota_server.hpp"
 #include "udp_server.hpp"
+#include "discover_server.hpp"
 #include "fraise.h"
 
 UDPServer udp;
+DiscoverServer discover;
 
 const int STA_MAX_TRIES = 2;
 int sta_num_tries = 0;
@@ -109,6 +111,7 @@ int main() {
     if (ota_server_init()) return 1;
 
     udp.setup(4343);
+    discover.setup();
     run_core1_setup = 1;
     sleep_ms(50);
     setup();
@@ -118,6 +121,7 @@ int main() {
         cyw43_arch_poll();
     #endif
         ota_server_service();
+        discover.service();
         loop();
     }
     return 0;
