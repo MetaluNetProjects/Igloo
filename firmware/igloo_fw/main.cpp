@@ -112,9 +112,7 @@ void enableMotorControl(bool enable) {
     if(enable) {
         position = setPoint = encoder.get_count();
         ramp.set(setPoint);
-    }
-    //pid.SetMode(enable ? 1 : 0);
-    //ramp_to_pid = enable;
+    } else pid.SetMode(0);
 }
 
 int get_motor_current_mA(bool update = false) {
@@ -190,9 +188,9 @@ void state_update() {
     static absolute_time_t change_state_time = at_the_end_of_time;
     static State next_next_state = next_state;
 
-    if(next_next_state != next_next_state) {
+    if(next_next_state != next_state) {
         change_state_time = at_the_end_of_time;
-        next_next_state = next_next_state;
+        next_next_state = next_state;
     }
 
     if(next_state != state) {
@@ -370,6 +368,9 @@ void fraise_receivebytes(const char* data, uint8_t len) {
             const ip4_addr_t *a = netif_ip4_addr(netif_default);
             fraise_printf("l IP %s\n", ip4addr_ntoa(a));
         }
+        break;
+    case 242:
+        print_partitions();
         break;
     }
 }

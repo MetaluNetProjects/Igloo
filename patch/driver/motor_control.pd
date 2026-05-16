@@ -1,4 +1,4 @@
-#N canvas 219 62 1159 799 12;
+#N canvas 308 31 1159 799 12;
 #X msg 361 24 1;
 #X msg 369 53 2;
 #X text 402 53 print current;
@@ -148,6 +148,8 @@
 #X text 463 733 play: sec ms us/step;
 #X msg 341 713 \$1 0 5000;
 #X msg 341 736 25 l \$1 i \$2 l \$3;
+#X msg 131 752 242;
+#X text 164 753 print partitions info;
 #X connect 0 0 109 0;
 #X connect 1 0 109 0;
 #X connect 4 0 109 0;
@@ -278,3 +280,4 @@
 #X connect 145 0 144 0;
 #X connect 147 0 148 0;
 #X connect 148 0 109 0;
+#X connect 149 0 109 0;
