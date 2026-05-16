@@ -1,7 +1,6 @@
 // UDP server handling Fraise and table messages
 
 #pragma once
-#include <functional>
 
 #include "pico/stdlib.h"
 #include "pico/cyw43_arch.h"
@@ -23,11 +22,8 @@ private:
 public:
     void setup() {
         client = udp_new();
-        /*pico_unique_board_id_t board_id;
-        pico_get_unique_board_id(&board_id);
-        snprintf(unique_name, "%0*x", PICO_UNIQUE_BOARD_ID_SIZE_BYTES * 2, */
         pico_get_unique_board_id_string(unique_name + 1, sizeof(unique_name) - 1);
-        next_time = make_timeout_time_ms(1000);
+        next_time = make_timeout_time_ms(100);
     }
 
     void send_message(const char* data, uint8_t len) {
@@ -40,9 +36,9 @@ public:
         cyw43_arch_lwip_end();
     }
 
-    void service() {
+    void service(int period_ms) {
         if(! time_reached(next_time)) return;
-        next_time = make_timeout_time_ms(1000);
+        next_time = make_timeout_time_ms(period_ms);
         send_message(unique_name, strlen(unique_name));
     }
 };

@@ -16,6 +16,11 @@
 #include "ramp.hpp"
 #include "PID_v1.h"
 #include "trajectory_table.hpp"
+#include "partition_info.h"
+#include "wifi_partition.hpp"
+//#include "romtable.hpp"
+#include "pico/bootrom.h"
+#include "boot/picobin.h"
 
 // PID settings:
 const int PID_KP = 90;
@@ -96,8 +101,8 @@ void setup_motor_current() {
 }
 
 void setup() {
-    ip_addr_t ip;
-    IP4_ADDR(&ip, 192, 168, 5, WIFI_IPADDR_D);
+    //ip_addr_t ip;
+    //IP4_ADDR(&ip, 192, 168, 5, WIFI_IPADDR_D);
     //netif_set_ipaddr(netif_default, &ip);
     gpio_set_irq_enabled_with_callback(PIN_ENC_A, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true, &gpio_callback);
     setup_motor_current();
@@ -372,6 +377,23 @@ void fraise_receivebytes(const char* data, uint8_t len) {
     case 242:
         print_partitions();
         break;
+    case 243:
+        {
+            intptr_t start;
+            int length;
+            if (get_partition_address("Tables", &start, &length)) {
+                fraise_printf("l Tables partition found 0x%08x %d\n", start, length);
+            } else fraise_printf("l Tables partition not found!\n");
+        }
+        break;
+    case 244:
+        {
+            const char *ssid = WifiPartition::get_ssid();
+            const char *pw = WifiPartition::get_password();
+            if(ssid && pw) fraise_printf("l wifi saved config %s %s\n", ssid, pw);
+            else fraise_printf("l wifi config not initialized\n");
+        }
+        break;
     }
 }
 
@@ -382,6 +404,15 @@ void fraise_receivechars(const char *data, uint8_t len){
         fraise_printf("E%s\n", data + 1);
     } else if(data[0] == 'V') { // Version
         print_version();
+    } else if(data[0] == 'W') { // wifi config
+        char ssid[64]{0};
+        char pw[64]{0};
+        sscanf(data, "WIFI_CONFIG %64s %64s", ssid, pw);
+        if(strlen(ssid) && strlen(pw)) {
+            fraise_printf("l wifi saving config %s %s: ", ssid, pw);
+            if(WifiPartition::set(ssid, pw)) fraise_printf("SUCCESS\n");
+            else fraise_printf("FAILURE\n");
+        }
     } else fraise_printf("unknown %d\n", data[0]);
 }
 

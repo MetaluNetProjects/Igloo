@@ -6,8 +6,6 @@ target_sources(wifraise INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/ota_server.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dhcpserver.c
     ${CMAKE_CURRENT_SOURCE_DIR}/dnsserver.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/uf2_family_ids.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/partition_info.c
 )
 
 target_include_directories(wifraise INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
@@ -19,7 +17,7 @@ target_link_libraries(wifraise INTERFACE
     #pico_multicore
     boot_uf2_headers
     pico_unique_id
-    pico_bootrom
-    hardware_flash
+    #pico_bootrom
+    #hardware_flash
 )
 

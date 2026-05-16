@@ -19,7 +19,7 @@ private:
     struct udp_pcb* client = NULL;
     int server_bound = -1;
     int port;
-    char fraise_buffer[128];
+    char fraise_buffer[256];
     int fraise_buflen = 0;
     enum class MessageType {fraise_bytes = 0, fraise_text, system, table_start, table_cont, table_end};
     enum class SystemId {ret_port = 0, ping};
@@ -36,6 +36,7 @@ private:
     };
     static const int NUM_TABLES = 32;
     TableDef tables[NUM_TABLES];
+    absolute_time_t last_message_time = at_the_end_of_time;
 
     void receive(struct udp_pcb *upcb, struct pbuf *p, 
             const ip_addr_t* addr,  // Address of sender
@@ -45,6 +46,8 @@ private:
         // can use this method to cause an assertion in debug mode, if this method is called when
         // cyw43_arch_lwip_begin IS needed
         cyw43_arch_lwip_check();
+
+        last_message_time = get_absolute_time();
 
         int n = 0;
         //last_sender_addr = addr;
@@ -213,5 +216,9 @@ public:
         if(table_num >= NUM_TABLES) return;
         tables[table_num].start_callback = start_cb;
         tables[table_num].end_callback = end_cb;
+    }
+    int get_last_message_ms() {
+        if(is_at_the_end_of_time(last_message_time)) return INT_MAX;
+        return to_ms_since_boot(get_absolute_time()) - to_ms_since_boot(last_message_time);
     }
 };

@@ -63,8 +63,22 @@
     {
       "name": "Tables",
       "id": 321,
-      "start": "3320k",
+      "start": "3816k",
       "size": "200k",
+      "families": ["data"],
+      "permissions": {
+        "secure": "rw",
+        "nonsecure": "rw",
+        "bootloader": "rw"
+      },
+      "ignored_during_riscv_boot": true,
+      "no_reboot_on_uf2_download": true
+    },
+    {
+      "name": "WIFI",
+      "id": 500,
+      "start": "4016k",
+      "size": "4k",
       "families": ["data"],
       "permissions": {
         "secure": "rw",

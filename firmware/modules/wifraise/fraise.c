@@ -96,7 +96,7 @@ uint32_t fraise_get_uint32(){
 /* --------- Message send "put" functions ----------*/
 
 struct {
-    char buf[64];
+    char buf[256];
     uint8_t len;
 } put_buffer;
 
@@ -148,7 +148,7 @@ bool fraise_put_send(){
 
 void fraise_printf(const char* fmt, ...) {
     va_list args;
-    char buf[64];
+    char buf[256];
     char *p = buf;
     va_start(args, fmt);
     vsnprintf(buf, sizeof(buf), fmt, args);

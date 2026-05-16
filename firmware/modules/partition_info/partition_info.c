@@ -13,8 +13,6 @@
 #include "hardware/flash.h"
 #include "uf2_family_ids.h"
 
-#if 1
-
 #include "fraise.h"
 
 #define panic fraise_printf
@@ -154,12 +152,12 @@ int print_partitions() {
     int rc;
     rc = read_partition_table(&pt);
     if (rc != 0) {
-        panic("rom_get_partition_table_info returned %d", pt.status);
+        panic("e rom_get_partition_table_info returned %d", pt.status);
     }
     if (!pt.has_partition_table) {
-        printf("there is no partition table\n");
+        printf("e there is no partition table\n");
     } else if (pt.partition_count == 0) {
-        printf("the partition table is empty\n");
+        printf("e the partition table is empty\n");
     }
 
     uf2_family_ids_t *family_ids = uf2_family_ids_new(pt.flags_and_permissions);
@@ -192,10 +190,10 @@ int print_partitions() {
                (p.flags_and_permissions & PICOBIN_PARTITION_PERMISSION_NS_R_BITS ? "r" : ""),
                (p.flags_and_permissions & PICOBIN_PARTITION_PERMISSION_NS_W_BITS ? "w" : ""));
         if (p.has_id) {
-            printf("\n id=%016llx", p.partition_id);
+            printf(" id=%016llx", p.partition_id);
         }
         if (p.has_name) {
-            printf("\n \"%s\"", p.name);
+            printf(" name=\"%s\"", p.name);
         }
 
         // print UF2 family ID
@@ -203,20 +201,46 @@ int print_partitions() {
         for (size_t i = 0; i < p.extra_family_id_count; i++) {
             uf2_family_ids_add_extra_family_id(family_ids, p.extra_family_ids[i]);
         }
-        str_family_ids = uf2_family_ids_join(family_ids, "- ");
-        printf("\n uf2 { %s }", str_family_ids);
+        str_family_ids = uf2_family_ids_join(family_ids, " ");
+        printf(" family=\"%s\"", str_family_ids);
         free(str_family_ids);
         uf2_family_ids_free(family_ids);
 
         printf("\n");
     }
     if (pt.status != 0) {
-        panic("rom_get_partition_table_info returned %d", pt.status);
+        panic("e rom_get_partition_table_info returned %d", pt.status);
     }
 
     return 0;
 }
 
-#else
-int print_partitions() {return 0;}
-#endif
+bool get_partition_address(const char *name, intptr_t *start, int *length) {
+    pico_partition_table_t pt;
+    int rc;
+    rc = read_partition_table(&pt);
+    if (rc != 0) {
+        panic("e rom_get_partition_table_info returned %d", pt.status);
+        return false;
+    }
+    if (!pt.has_partition_table) {
+        printf("e there is no partition table\n");
+        return false;
+    } else if (pt.partition_count == 0) {
+        printf("e the partition table is empty\n");
+        return false;
+    }
+
+    pico_partition_t p;
+    while (read_next_partition(&pt, &p)) {
+        if (p.has_name) {
+            if(! strcmp(p.name, name)) {
+                *start = p.first_sector * FLASH_SECTOR_SIZE;
+                *length = (p.last_sector - p.first_sector + 1) * FLASH_SECTOR_SIZE;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+

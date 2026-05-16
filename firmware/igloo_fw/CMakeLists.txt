@@ -54,6 +54,7 @@ add_subdirectory(../modules modules)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         wifraise
+        partition_info
         hardware_pwm
         hardware_adc
         )
