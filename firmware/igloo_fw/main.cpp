@@ -77,13 +77,13 @@ const char *state_name(State s) {
     return name;
 }
 
+absolute_time_t nextLed_time;
 void blink(int ledPeriod) {
-    static absolute_time_t nextLed;
     static bool led = false;
 
-    if(time_reached(nextLed)) {
+    if(time_reached(nextLed_time)) {
         set_led(led = !led);
-        nextLed = make_timeout_time_ms(ledPeriod);
+        nextLed_time = make_timeout_time_ms(ledPeriod);
     }
 }
 
@@ -120,9 +120,11 @@ void enableMotorControl(bool enable) {
     } else pid.SetMode(0);
 }
 
-int get_motor_current_mA(bool update = false) {
+int get_motor_current_mA() {
     static float current_filtered = 0;
-    if(update) {
+    static absolute_time_t next_time = 0;
+    if(time_reached(next_time)) {
+        next_time = make_timeout_time_ms(1000);
         float current_raw = 0;
         adc_select_input(PIN_MOT_CURRENT - 26);
         current_raw = adc_read();
@@ -185,24 +187,23 @@ void motorcontrol_update() {
     }
     motor.update();
     motor.reset_watchdog();
-    get_motor_current_mA(true);
     motor_check_current();
 }
 
 void state_update() {
     static absolute_time_t change_state_time = at_the_end_of_time;
-    static State next_next_state = next_state;
+    static State last_next_state = next_state;
 
-    if(next_next_state != next_state) {
+    if(last_next_state != next_state) {
         change_state_time = at_the_end_of_time;
-        next_next_state = next_state;
+        last_next_state = next_state;
     }
 
     if(next_state != state) {
         switch(state) {
         case State::manual:
             if(change_state_time == at_the_end_of_time) {
-                int stop_time_ms = 3000.0 * pwm / 32768.0; // stop in maximum 3sec
+                int stop_time_ms = 3000.0 * abs(pwm) / 32768.0; // stop in maximum 3sec
                 motor.goto_pwm_ms(pwm = 0, stop_time_ms);
                 change_state_time = make_timeout_time_ms(stop_time_ms);
             }
@@ -218,7 +219,7 @@ void state_update() {
             state = State::manual;
             table.stop();
             if(change_state_time == at_the_end_of_time) {
-                int stop_time_ms = 3000.0 * pwm / 32768.0; // stop in maximum 3sec
+                int stop_time_ms = 3000.0 * abs(pwm) / 32768.0; // stop in maximum 3sec
                 motor.goto_pwm_ms(pwm = 0, stop_time_ms);
                 change_state_time = make_timeout_time_ms(stop_time_ms);
             }
@@ -390,7 +391,7 @@ void fraise_receivebytes(const char* data, uint8_t len) {
         {
             const char *ssid = WifiPartition::get_ssid();
             const char *pw = WifiPartition::get_password();
-            if(ssid && pw) fraise_printf("l wifi saved config %s %s\n", ssid, pw);
+            if(ssid && pw) fraise_printf("l wifi current config %s %s\n", ssid, pw);
             else fraise_printf("l wifi config not initialized\n");
         }
         break;

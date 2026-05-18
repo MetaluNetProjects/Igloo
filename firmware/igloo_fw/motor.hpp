@@ -10,7 +10,7 @@
 class Motor {
 private:
     const int PWM_MAX = 5555; // 22.5kHz
-    const int period_ms = 10;
+    const int period_ms = 2;
     absolute_time_t next_time = get_absolute_time();
     absolute_time_t watchdog_time = at_the_end_of_time;
     int pinA, pinB, pinPwm;
