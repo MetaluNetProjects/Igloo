@@ -6,6 +6,7 @@
 #include "hardware/pwm.h"
 #include "pico/mutex.h"
 #include "math.h"
+#include <algorithm>
 
 class Ramp {
 private:
@@ -41,7 +42,7 @@ public:
     }
 
     bool is_stopped(){
-        return position == destination && speed == 0.0;
+        return (position == destination) && (speed == 0.0);
     }
 
     void stop() {
@@ -50,37 +51,32 @@ public:
     }
 
     void compute() {
-        float error = destination - position;
-        float stop_distance = abs(speed) * speed / (2.0 * accel);
         float dt = absolute_time_diff_us(last_time, get_absolute_time()) / (float)1e6;
-        if(dt == 0.0) return;
-        float dv = accel * dt;
         last_time = get_absolute_time();
+        if(dt == 0) return;
+
+/*
+    stop_position = position + abs(speed) * speed / (2.0 * accel)
+    stop_position_ideal = destination
+    destination - position = abs(speed_ideal) * speed_ideal / (2.0 * accel)
+    sgn(speed_ideal)*speed_ideal² = (destination - position) * 2.0 * accel
+    speed_ideal² = abs(destination - position) * 2.0 * accel
+    speed_ideal = sgn(destination - position) * sqrt(abs(destination - position) * 2.0 * accel)
+*/
+        float error = destination - position;
+        float speed_ideal = copysign(sqrt(abs(error) * 2.0 * accel), error);
+        float dv = std::clamp(speed_ideal - speed, -accel * dt, accel * dt);
+
         if(abs(error) < 1.0f && (abs(speed) < accel * 0.1)) {
             speed = 0;
             position = destination;
             return;
         }
-        if(error > 0) {
-            if(error > stop_distance) {
-                if(speed < maxspeed) {
-                    speed = MIN(speed + dv, maxspeed);
-                }
-            } else {
-                if(speed > 0) speed -= dv;
-            }
-        } else if (error < 0) {
-            if(error < stop_distance) {
-                if(speed > -maxspeed) {
-                    speed = MAX(speed - dv, -maxspeed);
-                }
-            } else {
-                if(speed < 0) speed += dv;
-            }
-        }
-        if(speed > maxspeed) speed -= dv;
-        else if(speed < -maxspeed) speed += dv;
-        
+
+        speed += dv;
+        if(speed > maxspeed) speed = MAX(speed - accel * dt, maxspeed);
+        else if(speed < -maxspeed) speed = MIN(speed + accel * dt, -maxspeed);
+
         position += speed * dt;
     }
 };
