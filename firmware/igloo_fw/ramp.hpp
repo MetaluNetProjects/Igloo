@@ -67,16 +67,12 @@ public:
         float speed_ideal = copysign(sqrt(abs(error) * 2.0 * accel), error);
         float dv = std::clamp(speed_ideal - speed, -accel * dt, accel * dt);
 
-        if(abs(error) < 1.0f && (abs(speed) < accel * 0.1)) {
-            speed = 0;
-            position = destination;
-            return;
-        }
-
         speed += dv;
         if(speed > maxspeed) speed = MAX(speed - accel * dt, maxspeed);
         else if(speed < -maxspeed) speed = MIN(speed + accel * dt, -maxspeed);
-
+        if(abs(speed) < (accel * dt * 0.0001)) {
+            speed = 0;
+        }
         position += speed * dt;
     }
 };
