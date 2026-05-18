@@ -199,7 +199,13 @@ void motorcontrol_update() {
     case State::tableramp:
         motor_ramp_check_stalled(tableramp.is_stopped());
         if(pid.Compute()) {
-            setPoint = table.read(tableramp.get_position());
+            static int last_step = -1;
+            int step = tableramp.get_position();
+            if(last_step != step) {
+                last_step = step;
+                fraise_printf("rstep %d\n", step);
+                setPoint = table.read(step);
+            }
             tableramp.compute();
             motor_updatepwm();
         }
