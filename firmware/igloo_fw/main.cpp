@@ -23,13 +23,17 @@
 #include "boot/picobin.h"
 
 // PID settings:
-const int PID_KP = 90;
-const int PID_KI = 100;
-const int PID_KD = 1;
+const float PID_KP = 90.0;
+const float PID_KI = 100.0;
+const float PID_KD = 1.0;
 
 // RAMP settings:
-const int RAMP_ACCEL = 2000;    // steps/s²
-const int RAMP_MAXSPEED = 5400; // steps/s
+const float RAMP_ACCEL = 2000;    // steps/s²
+const float RAMP_MAXSPEED = 5400; // steps/s
+
+// TABLERAMP settings:
+const float TABLERAMP_MAXSPEED = 100; // steps/s
+const float TABLERAMP_ACCEL = (TABLERAMP_MAXSPEED / 3);    // steps/s², 3s 0->fullspeed
 
 // STALLED settings:
 const int STALLED_TIME_MS = 2000;
@@ -58,13 +62,13 @@ float setPoint;
 
 PID pid(&position, &pwm, &setPoint, PID_KP, PID_KI, PID_KD, P_ON_E, DIRECT);
 Ramp ramp(RAMP_ACCEL, RAMP_MAXSPEED);
-//bool ramp_to_pid = false;
+Ramp tableramp(TABLERAMP_ACCEL, TABLERAMP_MAXSPEED);
 
 TrajTable table;
 int play_time_ms = 0;
 float play_ms_step = 10.0;
 
-enum class State{manual, ramp, table, error} state = State::manual, next_state = state;
+enum class State{manual, ramp, table, tableramp, error} state = State::tableramp, next_state = state;
 
 const char *state_name(State s) {
     const char* name;
@@ -72,6 +76,7 @@ const char *state_name(State s) {
         case(State::manual): name = "manual"; break;
         case(State::ramp): name = "ramp"; break;
         case(State::table): name = "table"; break;
+        case(State::tableramp): name = "tableramp"; break;
         case(State::error): name = "error"; break;
     }
     return name;
@@ -138,9 +143,10 @@ int get_motor_current_mA() {
     return (current_filtered * ((3.3 * 1540) / 4096));
 }
 
-void motor_check_stalled() {
+void motor_ramp_check_stalled(bool ramp_is_stopped) {
     static absolute_time_t stop_time = at_the_end_of_time;
-    if(! ramp.is_stopped()) {
+    if(! ramp_is_stopped) {
+        pid.SetMode(1);
         stop_time = make_timeout_time_ms(STALLED_TIME_MS);
         return;
     }
@@ -173,18 +179,33 @@ void motor_updatepwm() {
 
 void motorcontrol_update() {
     position = encoder.get_count();
-    if(pid.Compute()) {
-        ramp.compute();
-        if(state == State::ramp) { 
+
+    switch(state) {
+    case State::ramp:
+        motor_ramp_check_stalled(ramp.is_stopped());
+        if(pid.Compute()) {
             setPoint = ramp.get_position();
-            motor_check_stalled();
+            ramp.compute();
+            motor_updatepwm();
         }
-        else if(state == State::table) {
+        break;
+    case State::table:
+        pid.SetMode(1);
+        if(pid.Compute()) {
             setPoint = table.current_value();
-            //fraise_printf("l setPoint from table %f\n", setPoint);
+            motor_updatepwm();
         }
-        motor_updatepwm();
+        break;
+    case State::tableramp:
+        motor_ramp_check_stalled(tableramp.is_stopped());
+        if(pid.Compute()) {
+            setPoint = table.read(tableramp.get_position());
+            tableramp.compute();
+            motor_updatepwm();
+        }
+        break;
     }
+
     motor.update();
     motor.reset_watchdog();
     motor_check_current();
@@ -201,30 +222,36 @@ void state_update() {
 
     if(next_state != state) {
         switch(state) {
+        case State::ramp:
         case State::manual:
+        case State::table:
+        case State::tableramp:
+            state = State::manual;
+            ramp.stop();
+            table.stop();
+            tableramp.stop();
             if(change_state_time == at_the_end_of_time) {
                 int stop_time_ms = 3000.0 * abs(pwm) / 32768.0; // stop in maximum 3sec
                 motor.goto_pwm_ms(pwm = 0, stop_time_ms);
                 change_state_time = make_timeout_time_ms(stop_time_ms);
             }
             break;
-        case State::ramp:
-            if(change_state_time == at_the_end_of_time) {
+            /*if(change_state_time == at_the_end_of_time) {
                 ramp.stop();
                 change_state_time = make_timeout_time_ms(10000);
             }
             if(ramp.is_stopped()) change_state_time = make_timeout_time_ms(0);
             break;
-        case State::table:
-            state = State::manual;
             table.stop();
+            tableramp.stop();
             if(change_state_time == at_the_end_of_time) {
                 int stop_time_ms = 3000.0 * abs(pwm) / 32768.0; // stop in maximum 3sec
                 motor.goto_pwm_ms(pwm = 0, stop_time_ms);
                 change_state_time = make_timeout_time_ms(stop_time_ms);
             }
-            break;
+            break;*/
         case State::error:
+            change_state_time = make_timeout_time_ms(0);
             break;
         }
 
@@ -242,8 +269,15 @@ void state_update() {
                 table.stop();
                 encoder.set_count(0);
                 enableMotorControl(true);
-                pid.SetMode(1);
+                //pid.SetMode(1);
                 table.play_at(play_time_ms, play_ms_step);
+                break;
+            case State::tableramp:
+                tableramp.stop();
+                tableramp.set(0);
+                encoder.set_count(0);
+                enableMotorControl(true);
+                //pid.SetMode(1);
                 break;
             case State::error:
                 enableMotorControl(false);
@@ -263,7 +297,9 @@ void state_update() {
             next_state = State::manual;
         }
         break;
-    case State::error:
+    case State::tableramp:
+        break;
+   case State::error:
         enableMotorControl(false);
         pwm = 0;
         break;
@@ -281,14 +317,15 @@ void state_prepare_change(int stateid) {
     case 0: next_state = State::manual; break;
     case 1: next_state = State::ramp; break;
     case 2: next_state = State::table; break;
-    case 3: next_state = State::error; break;
+    case 3: next_state = State::tableramp; break;
+    case 4: next_state = State::error; break;
     }
 }
 
-void ramp_to(float dest) {
+/*void ramp_to(float dest) {
     ramp.set_destination(dest);
     if(state == State::ramp) pid.SetMode(1);
-}
+}*/
 
 void loop() {
     blink(250);
@@ -316,13 +353,16 @@ void fraise_receivebytes(const char* data, uint8_t len) {
         table.fraise_receive();
         break;
     case 11: // GOTO
-        ramp_to(fraise_get_int32());
+        ramp.set_destination(fraise_get_int32());
         break;
     case 12: // SPEED
         ramp.set_maxspeed(fraise_get_int32());
         break;
     case 13: // RAMP STOP
         ramp.stop();
+        break;
+    case 14: // RAMP ACCEL
+        ramp.set_accel(fraise_get_int32());
         break;
     case 20: // CHANGE STATE
         state_prepare_change(fraise_get_uint8());
@@ -339,6 +379,18 @@ void fraise_receivebytes(const char* data, uint8_t len) {
             next_state = state = State::manual;
         }
         break;
+    case 41: // TABLERAMP GOTO
+        tableramp.set_destination(fraise_get_int32());
+        break;
+    case 42: // TABLERAMPSPEED
+        tableramp.set_maxspeed(fraise_get_int32());
+        break;
+    case 43: // TABLERAMP RAMP STOP
+        tableramp.stop();
+        break;
+    case 44: // TABLERAMP RAMP ACCEL
+        tableramp.set_accel(fraise_get_int32());
+        break;
     case 100: // MANUAL PWM
         if(state == State::manual) {
             enableMotorControl(false);
@@ -354,9 +406,6 @@ void fraise_receivebytes(const char* data, uint8_t len) {
             D = fraise_get_int32() / 1000.0;
             pid.SetTunings(P, I, D);
         }
-        break;
-    case 120: // ramp accel
-        ramp.set_accel(fraise_get_int32());
         break;
     case 210: // set encoder
         encoder.set_count(fraise_get_int32());
