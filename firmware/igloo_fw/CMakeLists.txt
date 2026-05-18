@@ -59,6 +59,12 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         hardware_adc
         )
 
+add_custom_target(
+    gitDescribeTarget
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/git_describe.sh ${CMAKE_CURRENT_SOURCE_DIR}
+)
+add_dependencies(${CMAKE_PROJECT_NAME} gitDescribeTarget)
+
 # force recompile version.cpp each time for updating __TIME__
 add_custom_command(TARGET ${CMAKE_PROJECT_NAME}
         PRE_BUILD
