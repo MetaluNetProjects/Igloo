@@ -55,7 +55,7 @@
 #X msg 642 114 V;
 #X obj 723 116 list;
 #X obj 562 65 route l present V, f 35;
-#X listbox 10 50 40 0 0 0 - \$0-version - 0;
+#X listbox 11 51 45 0 0 0 - \$0-version _\$0-version-null 0;
 #X obj 562 37 fruit/receive \$1;
 #X obj 613 148 fruit/send2 \$1, f 11;
 #X obj 723 143 s \$0-version;
@@ -89,7 +89,7 @@
 #X obj 341 126 sel 0;
 #X msg 341 151 0;
 #X obj 852 324 spigot;
-#X obj 236 29 tgl 20 0 \$0-scan-snd \$0-scan-rcv scan 23 10 0 12 #00ff04 #000000 #000000 0 1;
+#X obj 277 29 tgl 20 0 \$0-scan-snd \$0-scan-rcv scan 23 10 0 12 #00ff04 #000000 #000000 0 1;
 #X obj 852 375 print visible_fruits;
 #X msg 852 349 ID= \$1 IP= \$2;
 #X obj 891 297 r \$0-scan-snd;
@@ -193,4 +193,4 @@
 #X connect 89 0 92 0;
 #X connect 92 0 91 0;
 #X connect 93 0 89 1;
-#X coords 0 -1 1 1 285 60 1 10 10;
+#X coords 0 -1 1 1 320 62 1 10 10;
