@@ -68,7 +68,7 @@ TrajTable table;
 int play_time_ms = 0;
 float play_ms_step = 10.0;
 
-enum class State{manual, ramp, table, tableramp, error} state = State::tableramp, next_state = state;
+enum class State{manual, ramp, table, tableramp, error} state = State::manual, next_state = state;
 
 const char *state_name(State s) {
     const char* name;
@@ -226,6 +226,10 @@ void state_update() {
         last_next_state = next_state;
     }
 
+    /*if((next_state == State::tableramp) && (table.get_length() == 0)) {
+        next_state = State::manual;
+    }*/
+
     if(next_state != state) {
         switch(state) {
         case State::ramp:
@@ -314,7 +318,7 @@ void state_update() {
     static absolute_time_t nextSendTime = 0;
     if(time_reached(nextSendTime)) {
         nextSendTime = make_timeout_time_ms(500);
-        fraise_printf("state %s\n", state_name(state));
+        fraise_printf("state %s %d\n", state_name(state), table.get_hash());
     }
 }
 

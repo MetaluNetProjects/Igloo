@@ -11,13 +11,36 @@ private:
     int zero_ms_since_boot;
     int table[MAX_STEPS]{0};
     int table_id = 5;
-    int length;
+    int length = 0;
     int start_time_ms;
     int step = 0;
     bool playing = false;
     float step_ms = 10.0;
+    int hash = 0;
 
 public:
+    int get_length() {
+        return length;
+    }
+
+    int modulo(int x, int m) {
+        int res = x % m;
+        if(res < 0) res += m;
+        return res;
+    }
+
+    void update_hash() { // 16bit checksum
+        int64_t sum = 0;
+        for(int i = 0; i < length; i++) {
+            sum = (sum + modulo(read(i), 65536)) % 65536;
+        }
+        hash = sum;// && ((1 << 22) -1 );
+    }
+
+    int get_hash() { // 16bit checksum
+        return hash;
+    }
+
     int now_ms() {
         return to_ms_since_boot(get_absolute_time()) - zero_ms_since_boot;
     }
@@ -45,6 +68,7 @@ public:
             [this](int i, int n){
                 fraise_printf("l udp table end %d\n", n / 4);
                 length = n / 4;
+                update_hash();
             }
         );
     }
@@ -110,6 +134,9 @@ public:
             break;
         case 3: // stop
             stop();
+            break;
+        case 10: // get hash
+            fraise_printf("tablehash %d\n", get_hash());
             break;
         }
     }

@@ -92,9 +92,8 @@ void process_line(const char *line, int count) {
     int nb = sscanf(line, "WIFI_CONFIG %64s %64s", ssid, pw);
     if(nb == 2 && strlen(ssid) && strlen(pw)) {
         printf("l wifi saving config %s %s: ", ssid, pw);
-        putchar('O');putchar('K');putchar('\n');
-        if(WifiPartition::set(ssid, pw)) fraise_printf("SUCCESS\n");
-        else fraise_printf("FAILURE\n");
+        if(WifiPartition::set(ssid, pw)) printf("SUCCESS\n");
+        else printf("FAILURE\n");
     }
 }
 
@@ -103,7 +102,6 @@ void char_available(void *param) {
     static int count = 0;
     int c = getchar_timeout_us(0); // get any pending key press but don't wait
     if(c == 0) return;
-    putchar(c);
     if(c == '\n') {
         line[count++] = '\n';
         line[count] = 0;
@@ -203,5 +201,5 @@ void wifi_print_status() {
     for (int i = 0; i < sta_num_tries; i++) {
         fraise_printf(" %d", sta_error_codes[i]);
     }
-    printf("\n");
+    fraise_printf("\n");
 }
