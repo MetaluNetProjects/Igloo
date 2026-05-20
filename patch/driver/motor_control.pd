@@ -1,4 +1,4 @@
-#N canvas 607 103 1264 971 12;
+#N canvas 513 109 1264 971 12;
 #X msg 361 24 1;
 #X msg 369 53 2;
 #X text 402 53 print current;
@@ -56,9 +56,9 @@
 #X text 659 484 print wifi_status and IP;
 #X text 710 623 set time;
 #X listbox 18 257 20 0 0 0 - - - 0;
-#X obj 175 456 metro 100;
-#X obj 175 429 tgl 20 0 empty empty empty 0 -10 0 12 #fcfcfc #000000 #000000 0 1;
-#X msg 175 481 0;
+#X obj 208 458 metro 100;
+#X obj 208 431 tgl 20 0 empty empty empty 0 -10 0 12 #fcfcfc #000000 #000000 0 1;
+#X msg 208 483 0;
 #X msg 430 448 13;
 #X text 459 447 ramp stop;
 #X obj 290 251 route ramp;
@@ -75,8 +75,8 @@
 #X floatatom 536 423 10 0 0 0 - - - 0;
 #X obj 29 99 fruit/receive \$1;
 #X obj 306 533 fruit/send \$1;
-#X obj 175 376 fruit/receive \$1;
-#X obj 175 401 route present;
+#X obj 208 378 fruit/receive \$1;
+#X obj 208 403 route present;
 #X obj 633 721 list prepend 10;
 #X msg 663 625 0 l \$1;
 #X text 743 720 trajectory table;
@@ -305,6 +305,10 @@
 #X msg 947 855 43;
 #X text 978 858 tableramp stop;
 #X obj 216 162 list split 1;
+#X obj 151 345 r \$1-vbatt-adj;
+#X obj 77 439 loadbang;
+#X obj 77 464 v \$1-vbatt-adj;
+#X obj 77 489 s \$1-vbatt-adj;
 #X connect 0 0 75 0;
 #X connect 1 0 75 0;
 #X connect 4 0 75 0;
@@ -430,4 +434,7 @@
 #X connect 142 0 133 0;
 #X connect 143 0 75 0;
 #X connect 145 0 103 0;
+#X connect 146 0 131 1;
+#X connect 147 0 148 0;
+#X connect 148 0 149 0;
 #X coords 0 -1 1 1 150 60 1 2 20;
