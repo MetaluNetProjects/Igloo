@@ -102,7 +102,7 @@
 #X text 117 724 find 'Tables' partition;
 #X msg 85 751 244;
 #X text 114 751 print wifi config;
-#X obj 207 173 s \$1-step;
+#X obj 270 214 s \$1-step;
 #X obj 957 267 r \$1-ctl;
 #X obj 663 599 r TIME;
 #X obj 390 660 r TIME;
@@ -280,13 +280,13 @@
 #X connect 75 0 76 0;
 #X restore 1138 325 pd send_table;
 #X msg 85 783 WIFI_CONFIG Domozic bidouchette;
-#X obj 131 227 s \$1-state;
+#X obj 112 189 s \$1-state;
 #X msg 701 768 10;
 #X text 727 768 get hash;
 #X listbox 214 54 20 0 0 0 - - - 0;
 #X obj 131 148 unpack s f;
 #X floatatom 202 95 8 0 0 0 - - - 0;
-#X obj 198 202 s \$1-tablehash;
+#X obj 193 191 s \$1-tablehash;
 #X obj 29 124 route l time state step rstep sense, f 43;
 #X obj 38 399 s \$1-sense;
 #X obj 38 349 unpack f f;
@@ -302,6 +302,9 @@
 #X obj 153 295 r \$1-step;
 #X floatatom 153 320 5 0 0 0 - - - 0;
 #X msg 512 579 2 5;
+#X msg 947 855 43;
+#X text 978 858 tableramp stop;
+#X obj 216 162 list split 1;
 #X connect 0 0 75 0;
 #X connect 1 0 75 0;
 #X connect 4 0 75 0;
@@ -391,6 +394,7 @@
 #X connect 118 0 133 0;
 #X connect 118 1 85 0;
 #X connect 118 1 60 0;
+#X connect 118 1 143 0;
 #X connect 118 2 65 0;
 #X connect 118 2 108 0;
 #X connect 118 3 75 0;
@@ -405,8 +409,8 @@
 #X connect 128 0 47 0;
 #X connect 128 1 56 0;
 #X connect 128 2 125 0;
-#X connect 128 3 103 0;
-#X connect 128 4 103 0;
+#X connect 128 3 145 0;
+#X connect 128 4 145 0;
 #X connect 128 5 130 0;
 #X connect 128 6 107 0;
 #X connect 130 0 132 0;
@@ -424,4 +428,6 @@
 #X connect 139 0 115 0;
 #X connect 140 0 141 0;
 #X connect 142 0 133 0;
+#X connect 143 0 75 0;
+#X connect 145 0 103 0;
 #X coords 0 -1 1 1 150 60 1 2 20;

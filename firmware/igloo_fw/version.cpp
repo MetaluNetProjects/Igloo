@@ -4,6 +4,6 @@
 #include "build/git_describe.h"
 
 void print_version() {
-    fraise_printf("V igloo %s @ %s", gitdesc, __DATE__ " " __TIME__ "\n");
+    fraise_printf("V igloo v%s @ %s", gitdesc, __DATE__ " " __TIME__ "\n");
 }
 
