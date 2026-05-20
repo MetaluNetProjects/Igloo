@@ -112,6 +112,8 @@ void char_available(void *param) {
     if(count < sizeof(line)) line[count++] = c;
 }
 
+void wifi_real_print_status();
+
 int main() {
     stdio_init_all();
     // Init core1 (with multicore_lockout_victim_init()) before ota_server
@@ -159,6 +161,8 @@ int main() {
 
     if (ota_server_init()) return 1;
 
+    wifi_real_print_status();
+
     udp.setup(4343);
     if(wifi_is_sta) discover.setup();
     //run_core1_setup = 1;
@@ -196,10 +200,21 @@ bool fraise_putbytes(const char* data, uint8_t len) { // returns true on success
 }
 
 void wifi_print_status() {
-    fraise_printf("l wifi sta %s %s\n", WIFI_SSID, WIFI_PASSWORD);
+    fraise_printf("l wifi mode: %s\n", wifi_is_sta?"station":"accesspoint");
+    fraise_printf("l wifi sta cfg %s %s\n", sta_ssid, sta_password);
     fraise_printf("l wifi tries %d errs:", sta_num_tries);
     for (int i = 0; i < sta_num_tries; i++) {
         fraise_printf(" %d", sta_error_codes[i]);
     }
     fraise_printf("\n");
+}
+
+void wifi_real_print_status() {
+    printf("l wifi mode: %s\n", wifi_is_sta?"station":"accesspoint");
+    printf("l wifi sta cfg %s %s\n", sta_ssid, sta_password);
+    printf("l wifi tries %d errs:", sta_num_tries);
+    for (int i = 0; i < sta_num_tries; i++) {
+        printf(" %d", sta_error_codes[i]);
+    }
+    printf("\n");
 }

@@ -42,7 +42,7 @@ public:
     }
 
     bool is_stopped(){
-        return (position == destination) && (speed == 0.0);
+        return (abs(position - destination) < 1.0) && (speed == 0.0);
     }
 
     void stop() {
@@ -70,8 +70,8 @@ public:
         speed += dv;
         if(speed > maxspeed) speed = MAX(speed - accel * dt, maxspeed);
         else if(speed < -maxspeed) speed = MIN(speed + accel * dt, -maxspeed);
-        if(abs(speed) < (accel * dt * 0.0001)) {
-            speed = 0;
+        if(abs(speed) < (accel * /*dt **/ 0.001)) {
+            speed = 0.0;
         }
         position += speed * dt;
     }

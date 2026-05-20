@@ -51,6 +51,8 @@ const int OVERCURRENT_MS = 2000;
 #define PIN_ENC_A        0
 #define PIN_ENC_B        2
 
+#define PIN_VBATT       27
+
 Motor motor{PIN_MOT_A, PIN_MOT_B, PIN_MOT_PWM};
 
 // encoder on J2: 4=A 5=B 6= 7=
@@ -68,7 +70,7 @@ TrajTable table;
 int play_time_ms = 0;
 float play_ms_step = 10.0;
 
-enum class State{manual, ramp, table, tableramp, error} state = State::manual, next_state = state;
+enum class State{manual, ramp, table, tableramp, error, none} state = State::manual, next_state = State::none;
 
 const char *state_name(State s) {
     const char* name;
@@ -78,6 +80,7 @@ const char *state_name(State s) {
         case(State::table): name = "table"; break;
         case(State::tableramp): name = "tableramp"; break;
         case(State::error): name = "error"; break;
+        case(State::none): name = "none"; break;
     }
     return name;
 }
@@ -111,11 +114,27 @@ void setup() {
     //netif_set_ipaddr(netif_default, &ip);
     gpio_set_irq_enabled_with_callback(PIN_ENC_A, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true, &gpio_callback);
     setup_motor_current();
+    adc_gpio_init(PIN_VBATT);
     encoder.init();
     motor.init();
     pid.SetOutputLimits(-32767.0, 32767.0);
     pid.SetSampleTime(5);
     table.setup();
+}
+
+float get_vbatt() {
+    static float adc_filtered = 0;
+    static absolute_time_t next_time = 0;
+    if(time_reached(next_time)) {
+        next_time = make_timeout_time_ms(1);
+        adc_select_input(PIN_VBATT - 26);
+        float adc = adc_read();
+        adc_filtered += (adc - adc_filtered) * 0.05;
+    }
+    // Vadc = 1k/(1k + 4.7k)*Vbatt : Vbatt = Vadc*5.7
+    // adc = Vadc * 4096 / 3.3 : Vadc = adc*3.3/4096
+    // Vbatt =  adc * 3.3 * 5.7 / 4096
+    return adc_filtered * (3.3f * 5.7f / 4096.0f);
 }
 
 void enableMotorControl(bool enable) {
@@ -129,7 +148,7 @@ int get_motor_current_mA() {
     static float current_filtered = 0;
     static absolute_time_t next_time = 0;
     if(time_reached(next_time)) {
-        next_time = make_timeout_time_ms(1000);
+        next_time = make_timeout_time_ms(1);
         float current_raw = 0;
         adc_select_input(PIN_MOT_CURRENT - 26);
         current_raw = adc_read();
@@ -230,7 +249,7 @@ void state_update() {
         next_state = State::manual;
     }*/
 
-    if(next_state != state) {
+    if(next_state != State::none) {
         switch(state) {
         case State::ramp:
         case State::manual:
@@ -268,6 +287,7 @@ void state_update() {
         if(time_reached(change_state_time)) {
             change_state_time = at_the_end_of_time;
             state = next_state;
+            next_state = State::none;
             switch(state) {
             case State::manual:
                 enableMotorControl(false);
@@ -278,6 +298,7 @@ void state_update() {
             case State::table:
                 table.stop();
                 encoder.set_count(0);
+                setPoint = 0;
                 enableMotorControl(true);
                 //pid.SetMode(1);
                 table.play_at(play_time_ms, play_ms_step);
@@ -286,7 +307,9 @@ void state_update() {
                 tableramp.stop();
                 tableramp.set(0);
                 encoder.set_count(0);
+                setPoint = 0;
                 enableMotorControl(true);
+                fraise_printf("rstep 0\n");
                 //pid.SetMode(1);
                 break;
             case State::error:
@@ -342,11 +365,16 @@ void loop() {
     state_update();
     table.update();
     motorcontrol_update();
+    get_motor_current_mA();
+    get_vbatt();
 }
 
 void fraise_receivebytes(const char* data, uint8_t len) {
     char command = fraise_get_uint8();
     switch(command) {
+    case 0: // get sensors
+        fraise_printf("sense %d %f\n", get_motor_current_mA(), get_vbatt());
+        break;
     case 1:
         fraise_printf("l pwm %d\n", motor.get_pwm());
         break;
@@ -400,6 +428,16 @@ void fraise_receivebytes(const char* data, uint8_t len) {
         break;
     case 44: // TABLERAMP RAMP ACCEL
         tableramp.set_accel(fraise_get_int32());
+        break;
+    case 45: // TABLERAMP SET
+        {
+            int ramp_pos = fraise_get_int32();
+            tableramp.set(ramp_pos);
+            if(state == State::tableramp) {
+                encoder.set_count(table.read(ramp_pos));
+                setPoint = encoder.get_count();
+            }
+        }
         break;
     case 100: // MANUAL PWM
         if(state == State::manual) {
