@@ -1,5 +1,5 @@
 #N canvas 591 299 645 594 12;
-#X obj 153 101 cnv 20 55 20 empty \$0-connected-can connecté 2 12 0 10 #14e814 #000000 0;
+#X obj 153 101 cnv 20 55 20 empty \$0-connected-can connecté 2 12 0 10 #e0e0e0 #a0a0a0 0;
 #X obj 57 371 s \$0-connected-can;
 #X obj 57 214 fruit/receive mot_\$1;
 #X obj 57 239 route present;
@@ -9,14 +9,14 @@
 #X msg 97 289 16 22;
 #X obj 101 101 cnv 20 50 20 empty empty \$1: 2 12 0 10 #000000 #ffffff 0;
 #X obj 335 101 cnv 20 55 20 empty empty courant: 2 12 0 10 #000000 #ffffff 0;
-#X obj 390 101 cnv 20 32 20 empty \$0-current-can \ \ 8mA 2 12 0 10 #dfdfdf #000000 0;
+#X obj 390 101 cnv 20 32 20 empty \$0-current-can \ \ 0mA 2 12 0 10 #dfdfdf #000000 0;
 #X obj 424 101 cnv 20 55 20 empty empty batterie: 2 12 0 10 #000000 #ffffff 0;
 #X obj 70 485 route current;
 #X obj 312 371 s \$0-current-can;
 #X floatatom 364 228 5 0 0 0 - - - 0;
 #X obj 312 320 makefilename %3dmA;
 #X msg 312 346 label \$1;
-#X obj 481 101 cnv 20 32 20 empty \$0-volt-can 12.1V 2 12 0 10 #dfdfdf #000000 0;
+#X obj 481 101 cnv 20 32 20 empty \$0-volt-can \ 0.0V 2 12 0 10 #dfdfdf #000000 0;
 #X msg 451 346 label \$1;
 #X obj 451 371 s \$0-volt-can;
 #X floatatom 461 267 5 0 0 0 - - - 0;
@@ -37,6 +37,8 @@
 #X msg 414 448 10 22;
 #X msg 354 448 13 22;
 #X obj 433 423 loadbang;
+#X obj 493 188 loadbang;
+#X msg 493 213 0 0;
 #X connect 2 0 3 0;
 #X connect 3 0 4 0;
 #X connect 3 1 28 0;
@@ -66,4 +68,7 @@
 #X connect 35 0 34 0;
 #X connect 36 0 34 0;
 #X connect 37 0 35 0;
+#X connect 38 0 39 0;
+#X connect 38 0 29 0;
+#X connect 39 0 23 0;
 #X coords 0 -1 1 1 415 22 2 100 100;
