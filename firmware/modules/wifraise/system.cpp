@@ -52,10 +52,9 @@ void set_led(bool l) {
 
 static bool connect_sta() {
     int err;
-    if (sta_num_tries >= STA_MAX_TRIES) return false;
+    //if (sta_num_tries >= STA_MAX_TRIES) return false;
     err = cyw43_arch_wifi_connect_timeout_ms(sta_ssid, sta_password, CYW43_AUTH_WPA2_AES_PSK, 30000);
-    //err = cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD, CYW43_AUTH_WPA2_AES_PSK, 30000);
-    sta_error_codes[sta_num_tries++] = err;
+    //sta_error_codes[sta_num_tries++] = err;
     if(err == PICO_OK) wifi_is_sta = 1;
     return err == PICO_OK;
 }
@@ -142,11 +141,12 @@ int main() {
     if((!sta_ssid) || (!sta_password)) {
         connect_ap();
     } else {
-        sleep_ms(100);
+        /*sleep_ms(100);
         if (!connect_sta()) {
             sleep_ms(500);
             if (!connect_sta()) connect_ap();
-        }
+        }*/
+        while(!connect_sta()) sleep_ms(500);
     }
     /*if(1) {
         cyw43_arch_enable_sta_mode();
