@@ -4,7 +4,7 @@
 #X obj 4 2 cnv 20 550 700 empty empty Igloo 20 25 2 40 #404040 #feffc6 0;
 #X obj 167 20 bng 50 250 50 0 \$0-reinit-show-snd \$0-reinit-show-rcv RESET 1 25 0 16 #606060 #ffffff #ffffff;
 #X obj 219 20 cnv 20 130 50 empty empty ETAT: 10 12 0 18 #bbbbbb #404040 0;
-#X obj 222 42 cnv 20 100 25 empty \$0-state-name-canvas PRET 10 12 0 18 #14e814 #404040 0;
+#X obj 222 42 cnv 20 100 25 empty \$0-state-name-canvas PAS\ PRET 10 12 0 18 #fc2828 #404040 0;
 #X obj 28 254 cnv 20 500 300 empty empty Mode\ Manuel 10 15 2 24 #e0e0e0 #404040 0;
 #X obj 477 19 bng 50 250 50 0 \$0-edit-show-snd \$0-edit-show-rcv EDIT 5 25 0 16 #faff00 #000000 #000000;
 #X obj 28 92 cnv 20 500 150 empty empty Mode\ Automatique 10 15 2 24 #e0e0e0 #404040 0;
@@ -466,7 +466,7 @@
 #X connect 89 0 86 0;
 #X connect 89 0 88 0;
 #X restore 24 182 pd seq-stuff;
-#N canvas 629 7 568 418 \$0-EDIT 1;
+#N canvas 629 7 568 418 \$0-EDIT 0;
 #X obj 10 8 cnv 20 550 400 empty empty Igloo\ -\ édition\ trajectoire 10 15 2 24 #e0e0e0 #404040 0;
 #X obj 21 43 bng 50 250 50 0 \$0-edit-down-snd \$0-edit-down-rcv < 17 25 0 30 #c6feff #000000 #000000;
 #X obj 73 43 nbx 3 50 0 16 0 0 \$0-edit-n-snd \$0-edit-n-rcv empty 0 -10 0 18 #c6feff #000000 #000000 0 256;
@@ -485,7 +485,6 @@
 #X obj 183 347 bng 50 250 50 0 \$0-play_stop-snd \$0-play_stop-rcv STOP 5 25 0 16 #000000 #ffffff #ffffff;
 #X obj 252 348 bng 50 250 50 0 \$0-load-seq-snd \$0-load-seq-rcv LOAD 5 25 0 16 #00ff04 #000000 #000000;
 #X obj 310 348 bng 50 250 50 0 \$0-save-seq-snd \$0-save-seq-rcv SAVE 5 25 0 16 #ff0400 #000000 #000000;
-#X obj 370 349 tgl 50 0 \$0-open-window-snd \$0-open-window-rcv VIEW 5 25 0 16 #faff00 #000000 #000000 0 1;
 #X obj 428 98 bng 50 250 50 0 \$0-edit-newpoint-snd \$0-edit-newpoint-rcv new 5 25 0 14 #feffc6 #000000 #000000;
 #X obj 428 150 bng 50 250 50 0 \$0-edit-delpoint-snd \$0-edit-delpoint-rcv delete 2 25 0 14 #ff0400 #000000 #000000;
 #X obj 160 43 nbx 3 50 0 12 0 0 \$0-edit-totaln-snd \$0-edit-totaln-rcv / -10 25 0 18 #bbbbbb #000000 #000000 0 256;
@@ -507,6 +506,7 @@
 #X obj 227 122 bng 50 250 50 0 \$0-BACK-snd \$0-BACK-rcv BACK 5 25 0 16 #9f9f9f #000000 #000000;
 #X msg 228 275 30;
 #X text 256 275 aller à 30s;
+#X obj 422 19 tgl 50 0 \$0-open-window-snd \$0-open-window-rcv VIEW 5 25 0 16 #faff00 #000000 #000000 0 1;
 #X connect 29 0 31 0;
 #X connect 32 0 29 0;
 #X connect 36 0 31 0;
