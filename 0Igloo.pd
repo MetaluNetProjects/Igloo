@@ -36,7 +36,7 @@
 #X obj 46 123 bng 50 250 50 0 empty \$0-PLAY_IN-rcv PLAY 5 25 0 16 #e0e0e0 #e0e0e0 #e0e0e0;
 #X obj 27 660 cnv 20 500 30 empty empty Stuff 10 15 2 24 #e0e0e0 #404040 0;
 #X text 415 665 metalu.net 2026;
-#N canvas 42 699 345 243 STUFF 0;
+#N canvas 42 699 345 243 STUFF 1;
 #X obj 25 67 visu \$0;
 #N canvas 672 524 621 426 CONFIG 0;
 #X obj 118 180 v \$0-DIST_ROUES;
@@ -522,16 +522,12 @@
 #X msg 228 275 30;
 #X text 256 275 aller à 30s;
 #X obj 422 19 tgl 50 0 \$0-open-window-snd \$0-open-window-rcv VIEW 5 25 0 16 #faff00 #000000 #000000 0 1;
-#X msg 197 181 16;
-#X msg 239 180 20;
-#X msg 282 180 10;
 #X msg 346 273 10.4;
+#X msg 190 184 20;
 #X connect 29 0 31 0;
 #X connect 32 0 29 0;
 #X connect 36 0 31 0;
 #X connect 37 0 31 0;
 #X connect 39 0 22 0;
-#X connect 42 0 31 0;
+#X connect 42 0 22 0;
 #X connect 43 0 31 0;
-#X connect 44 0 31 0;
-#X connect 45 0 22 0;
