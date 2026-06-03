@@ -39,8 +39,8 @@ const float TABLERAMP_ACCEL = (TABLERAMP_MAXSPEED / 3);    // steps/s², 3s 0->f
 const int STALLED_TIME_MS = 2000;
 
 // CURRENT SECURITY
-const int OVERCURRENT_MA = 800;
-const int OVERCURRENT_MS = 2000;
+const int OVERCURRENT_MA = 3000;
+const int OVERCURRENT_MS = 4000;
 
 // pins definition
 #define PIN_MOT_A       15
