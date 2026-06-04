@@ -49,9 +49,12 @@ Le bouton **EDIT** ouvre la fenêtre d'édition de la trajectoire (cf chapitre *
     Le bouton **PLAY**, dont le nom ne s'affiche que quand l'**ETAT** est **PRET**, est relié sur le *message* `[120(` qui va demander une lecture de la trajectoire en 120 secondes. Il est aussi possible de cliquer directement sur le *message* `[120(` ou sur les autres *messages*, comme `[90(`. Il est aussi possible de changer la valeur des messages ou d'en ajouter d'autres :  
     - passer en mode *Edition* via le menu *Edition/Mode édition* ou `Ctrl+E`  
     - cliquer dans un *message* et éditer sa valeur
-    - ou ajouter un nouveau *message* (menu *Ajouter/Message*) avec la valeur désirée
+    - ou ajouter un nouveau *message* (menu *Ajouter/Message*) avec la valeur désirée, et le connecte sur la case `[s $0-PLAY_IN_N_SECONDS]` (tirer le "fil" en partant du message créé)
     - sauver le *patch* (*Fichier/Enregistrer* ou `Ctrl+S`)
+    - sortir du mode *Edition* (`Ctrl+E`)
     
+    Remarque : le temps minimum du parcours (correspondant à la vitesse 100%) est celui indiqué dans la fenêtre *Édition de la trajectoire* : on ne peut pas aller plus vite que la trajectoire programmée, mais on peut aller plus lentement.
+
     Le bouton **BACK** permet de revenir à l'emplacement de départ après que la trajectoire aie été jouée, ou après l'appui sur **STOP**.
 
 - ### Mode Manuel
@@ -89,6 +92,21 @@ La position de départ est fixée ; on peut la changer dans stuff/CONFIG, en éd
 Le bouton **new** permet de créer un nouveau point juste avant le point actuel, le bouton **delete** de supprimer le point actuel.
 
 Les boutons **PLAY**, **X2** (deux fois plus vite), **X10** ou **STOP** (dix fois plus vite) permettent de lancer ou arrêter l'animation sur la fenêtre graphique, mais n'envoient pas d'instruction aux moteurs. De même le slider **temps actuel** permet de déplacer manuellement la représentation de l'igloo tout au long du parcours.
+
+## Fichiers de trajectoire
+
+Le programme fonctionne avec un fichier de trajectoire "courant", qui est sauvegardé automatiquement après chaque modification. Pas besoin donc de "sauver(**SAVE**)" ou "charger(**LOAD**)" pendant la session de travail.
+
+Par contre, à la fin de la session, il sera indispensable de sauver la trajectoire en choisissant un nom de fichier signifiant (genre avec la date courante), de manière à pouvoir le transmettre (par exemple par mail) à l'autre régisseur.
+
+Les fichiers trajectoires sont stockés dans `Igloo/sequences`.
+
+Donc à l'issue de la résidence :
+
+- le régisseur 1 sauve la trajectoire (**SAVE**), avec comme nom par exemple `final_26juin2026`
+- il envoie par mail le fichier `Igloo/sequences/final_26juin2026` au régisseur 2 (et à tout le monde par sécurité ;-)
+- le régisseur 2 télécharge le fichier, le place dans son ordi dans `Igloo/sequences`, et charge ce fichier (**LOAD**) dans le logiciel.
+
 
 ----------
 GNU GENERAL PUBLIC LICENSE - metalu.net 2026
