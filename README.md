@@ -85,11 +85,9 @@ Le bouton **EDIT** ouvre la fenêtre d'édition de la trajectoire (cf chapitre *
 
 Cette fenêtre permet d'éditer la trajectoire courante, de la faire jouer visuellement, et également d'effectuer des sauvegardes et de les recharger.
 
-La trajectoire est définie comme une suite de points, pour lesquels on spécifie la vitesse de chacun des moteurs et la durée du segment.
+La trajectoire est définie par une position de départ et une suite de points, pour lesquels on spécifie la vitesse de chacun des moteurs et la durée du segment.
 
-La position de départ est fixée ; on peut la changer dans stuff/CONFIG, en éditant la valeur du message connecté à l'objet `[s $0-INIT_XY]`, mais cela aura pour effet de décaler toutes les trajectoires déja enregistrées.
-
-Le bouton **new** permet de créer un nouveau point juste avant le point actuel, le bouton **delete** de supprimer le point actuel.
+Les boutons **nouveau point** permet de créer un nouveau point **avant** ou **après** le point actuel, le bouton **suppr** de supprimer le point actuel.
 
 Les boutons **PLAY**, **X2** (deux fois plus vite), **X10** ou **STOP** (dix fois plus vite) permettent de lancer ou arrêter l'animation sur la fenêtre graphique, mais n'envoient pas d'instruction aux moteurs. De même le slider **temps actuel** permet de déplacer manuellement la représentation de l'igloo tout au long du parcours.
 
