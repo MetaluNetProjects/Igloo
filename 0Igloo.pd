@@ -22,7 +22,7 @@
 #X obj 43 488 nbx 5 50 -100 100 0 0 \$0-VITESSEd-snd-- \$0-VITESSEd-rcv empty 0 -10 0 18 #bbbbbb #000000 #000000 0 256;
 #X text 41 407 -100%;
 #X text 410 408 +100%;
-#X obj 46 309 hsl 400 60 0 158.58 0 0 \$0-POSITION-snd \$0-POSITION-rcv POSITION\ PARCOURS 10 30 0 18 #fcfcfc #000000 #000000 0 1;
+#X obj 46 309 hsl 400 60 0 158.4 0 0 \$0-POSITION-snd \$0-POSITION-rcv POSITION\ PARCOURS 10 30 0 18 #fcfcfc #000000 #000000 0 1;
 #X obj 46 370 hsl 400 28 0 1 0 0 empty empty empty 10 7 0 12 #ffffff #000000 #000000 0 1;
 #X obj 46 384 hsl 400 14 0 1 0 0 \$0-real_pos-G-snd \$0-real_pos-G-rcv gauche 10 7 0 12 #dfdfdf #000000 #000000 0 1;
 #X obj 46 370 hsl 400 14 0 1 0 0 \$0-real_pos-D-snd \$0-real_pos-D-rcv droite 10 7 0 12 #dfdfdf #000000 #000000 0 1;
@@ -35,7 +35,7 @@
 #X obj 46 123 bng 50 250 50 0 empty \$0-PLAY_IN-rcv PLAY 5 25 0 16 #e0e0e0 #e0e0e0 #e0e0e0;
 #X obj 27 758 cnv 20 500 30 empty empty Stuff 10 15 2 24 #e0e0e0 #404040 0;
 #X text 415 763 metalu.net 2026;
-#N canvas 168 707 345 243 STUFF 1;
+#N canvas 326 672 345 243 STUFF 0;
 #X obj 25 67 visu \$0;
 #N canvas 171 556 507 426 CONFIG 0;
 #X msg 83 88 10;
@@ -652,7 +652,7 @@
 #X connect 89 0 88 0;
 #X connect 90 0 68 0;
 #X restore 24 182 pd seq-stuff;
-#N canvas 386 87 565 564 \$0-EDIT 1;
+#N canvas 386 87 565 564 \$0-EDIT 0;
 #X obj 10 8 cnv 20 540 550 empty empty Igloo\ -\ édition\ trajectoire 10 15 2 24 #e0e0e0 #404040 0;
 #X obj 21 173 bng 50 250 50 0 \$0-edit-down-snd \$0-edit-down-rcv < 17 25 0 30 #c6feff #000000 #000000;
 #X obj 73 173 nbx 3 50 1 33 0 0 \$0-edit-n-snd \$0-edit-n-rcv empty 0 -10 0 18 #c6feff #000000 #000000 0 256;
@@ -663,8 +663,8 @@
 #X obj 228 286 nbx 5 50 -439.823 439.823 0 0 \$0-edit-droite-snd \$0-edit-droite-rcv mm/sec 110 25 0 18 #e3c6ff #000000 #000000 0 256;
 #X obj 23 340 hsl 200 50 -439.823 439.823 0 0 \$0-edit-gauche-snd \$0-edit-gauche-rcv vitesse\ gauche 20 25 0 16 #e3c6ff #000000 #000000 0 1;
 #X obj 228 340 nbx 5 50 -439.823 439.823 0 0 \$0-edit-gauche-snd \$0-edit-gauche-rcv mm/sec 110 25 0 18 #e3c6ff #000000 #000000 0 256;
-#X obj 23 415 hsl 200 50 0 158.59 0 0 \$0-current_time-snd \$0-current_time-rcv temps\ actuel 20 25 0 16 #fcfcfc #000000 #000000 0 1;
-#X obj 230 415 nbx 5 50 0 158.59 0 0 \$0-current_time-snd \$0-current_time-rcv s 110 25 0 18 #fcfcfc #000000 #000000 0 256;
+#X obj 23 415 hsl 200 50 0 158.41 0 0 \$0-current_time-snd \$0-current_time-rcv temps\ actuel 20 25 0 16 #fcfcfc #000000 #000000 0 1;
+#X obj 230 415 nbx 5 50 0 158.41 0 0 \$0-current_time-snd \$0-current_time-rcv s 110 25 0 18 #fcfcfc #000000 #000000 0 256;
 #X obj 20 477 bng 50 250 50 0 \$0-play_x1-snd \$0-play_x1-rcv PLAY 5 25 0 16 #ffffff #000000 #000000;
 #X obj 75 477 bng 50 250 50 0 \$0-play_x2-snd \$0-play_x2-rcv X2 5 25 0 16 #ffffff #000000 #000000;
 #X obj 129 477 bng 50 250 50 0 \$0-play_x10-snd \$0-play_x10-rcv X10 5 25 0 16 #ffffff #000000 #000000;
@@ -703,8 +703,8 @@
 #X obj 227 122 bng 50 250 50 0 \$0-BACK-snd \$0-BACK-rcv BACK 5 25 0 16 #9f9f9f #000000 #000000;
 #X obj 422 19 tgl 50 0 \$0-open-window-snd \$0-open-window-rcv VIEW 5 25 0 16 #faff00 #000000 #000000 0 1;
 #X msg 190 184 20;
-#X obj 452 310 nbx 6 18 0 158.58 0 0 \$0-POSITION-snd \$0-POSITION-rcv empty 0 -10 0 12 #fcfcfc #000000 #000000 0 256;
-#X obj 35 549 cnv 20 480 95 empty \$0-MANUAL_STOP_AT-can STOP\ AT\ (STOPPED!) 10 12 0 14 #fc2828 #404040 0;
+#X obj 452 310 nbx 6 18 0 158.4 0 0 \$0-POSITION-snd \$0-POSITION-rcv empty 0 -10 0 12 #fcfcfc #000000 #000000 0 256;
+#X obj 35 549 cnv 20 480 95 empty \$0-MANUAL_STOP_AT-can STOP\ AT\ (not\ stopped) 10 12 0 14 #fcfcfc #404040 0;
 #X msg 425 613 -1;
 #X obj 236 566 bng 40 250 50 0 empty empty empty 0 -10 0 12 #faff00 #000000 #000000;
 #X obj 425 567 bng 40 250 50 0 empty empty empty 0 -10 0 12 #00ff04 #000000 #000000;
