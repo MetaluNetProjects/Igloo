@@ -1,4 +1,4 @@
-#N canvas 608 99 730 627 12;
+#N canvas 776 275 730 627 12;
 #X obj 32 80 motor_control mot_droite;
 #X obj 356 80 motor_control mot_gauche;
 #X obj 545 163 loadbang;
@@ -10,7 +10,7 @@
 #X msg 626 215 0;
 #X obj 545 266 s TIME;
 #X msg 660 213 10000;
-#N canvas 743 346 533 441 check-tables 0;
+#N canvas 1234 543 533 441 check-tables 0;
 #X obj 50 34 r \$1-COMPUTE_FINISH;
 #X obj 50 123 symbol \$1-TAB_MOTD;
 #X msg 50 148 sendtable \$1;
@@ -738,6 +738,8 @@
 #X msg 493 262 0;
 #X obj 493 285 s \$1-VITESSE-rcv;
 #X floatatom 333 265 5 0 0 0 - - - 0;
+#X obj 177 503 r \$1-POSITION-snd;
+#X msg 177 528 set \$1;
 #X connect 0 0 2 0;
 #X connect 1 0 0 0;
 #X connect 2 0 46 0;
@@ -814,6 +816,8 @@
 #X connect 75 0 48 0;
 #X connect 75 1 76 0;
 #X connect 76 0 77 0;
+#X connect 79 0 80 0;
+#X connect 80 0 10 0;
 #X restore 32 237 pd ModeManuel;
 #N canvas 645 339 504 406 reinit-logic 0;
 #X msg 17 84 vis 1;
