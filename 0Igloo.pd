@@ -2,9 +2,9 @@
 #X declare -path patch/edit;
 #X declare -path patch/driver;
 #X obj 4 2 cnv 20 550 800 empty empty Igloo 20 25 2 40 #404040 #feffc6 0;
-#X obj 167 20 bng 50 250 50 0 \$0-reinit-show-snd \$0-reinit-show-rcv RESET 1 25 0 16 #606060 #ffffff #ffffff;
-#X obj 219 20 cnv 20 130 50 empty empty ETAT: 10 12 0 18 #bbbbbb #404040 0;
-#X obj 222 42 cnv 20 100 25 empty \$0-state-name-canvas PAS\ PRET 10 12 0 18 #fc2828 #404040 0;
+#X obj 141 20 bng 50 250 50 0 \$0-reinit-show-snd \$0-reinit-show-rcv RESET 1 25 0 16 #606060 #ffffff #ffffff;
+#X obj 193 20 cnv 20 130 50 empty empty ETAT: 10 12 0 18 #bbbbbb #404040 0;
+#X obj 196 42 cnv 20 100 25 empty \$0-state-name-canvas PAS\ PRET 10 12 0 18 #fc2828 #404040 0;
 #X obj 28 254 cnv 20 500 400 empty empty Mode\ Manuel 10 15 2 24 #e0e0e0 #404040 0;
 #X obj 477 19 bng 50 250 50 0 \$0-edit-show-snd \$0-edit-show-rcv EDIT 5 25 0 16 #faff00 #000000 #000000;
 #X obj 28 92 cnv 20 500 150 empty empty Mode\ Automatique 10 15 2 24 #e0e0e0 #404040 0;
@@ -35,7 +35,7 @@
 #X obj 46 123 bng 50 250 50 0 empty \$0-PLAY_IN-rcv PLAY 5 25 0 16 #e0e0e0 #e0e0e0 #e0e0e0;
 #X obj 27 758 cnv 20 500 30 empty empty Stuff 10 15 2 24 #e0e0e0 #404040 0;
 #X text 415 763 metalu.net 2026;
-#N canvas 326 672 345 243 STUFF 0;
+#N canvas 64 646 345 243 STUFF 1;
 #X obj 25 67 visu \$0;
 #N canvas 171 556 507 426 CONFIG 0;
 #X msg 83 88 10;
@@ -652,7 +652,7 @@
 #X connect 89 0 88 0;
 #X connect 90 0 68 0;
 #X restore 24 182 pd seq-stuff;
-#N canvas 386 87 565 564 \$0-EDIT 0;
+#N canvas 386 87 565 564 \$0-EDIT 1;
 #X obj 10 8 cnv 20 540 550 empty empty Igloo\ -\ édition\ trajectoire 10 15 2 24 #e0e0e0 #404040 0;
 #X obj 21 173 bng 50 250 50 0 \$0-edit-down-snd \$0-edit-down-rcv < 17 25 0 30 #c6feff #000000 #000000;
 #X obj 73 173 nbx 3 50 1 33 0 0 \$0-edit-n-snd \$0-edit-n-rcv empty 0 -10 0 18 #c6feff #000000 #000000 0 256;
@@ -724,6 +724,8 @@
 #X text 287 253 diago;
 #X text 355 251 fond;
 #X text 418 252 centre;
+#X obj 334 21 bng 19 250 50 0 \$0-droite-resend-snd \$0-droite-resend-rcv droite 23 10 0 12 #fcfcfc #000000 #fcfcfc;
+#X obj 334 51 bng 19 250 50 0 \$0-gauche-resend-snd \$0-gauche-resend-rcv gauche 23 10 0 12 #fcfcfc #000000 #fcfcfc;
 #X connect 28 0 30 0;
 #X connect 31 0 28 0;
 #X connect 35 0 30 0;
