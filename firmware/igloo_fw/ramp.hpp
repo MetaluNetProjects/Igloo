@@ -28,6 +28,10 @@ public:
         return position;
     }
 
+    float get_speed(){
+        return speed;
+    }
+
     void set(float d){
         destination = position = d;
         speed = 0.0f;
@@ -64,12 +68,11 @@ public:
     speed_ideal = sgn(destination - position) * sqrt(abs(destination - position) * 2.0 * accel)
 */
         float error = destination - position;
-        float speed_ideal = copysign(sqrt(abs(error) * 2.0 * accel), error);
+        if(abs(error) < 0.5) error = 0;
+        float speed_ideal = copysign(MIN(sqrt(abs(error) * 2.0 * accel), maxspeed), error);
         float dv = std::clamp(speed_ideal - speed, -accel * dt, accel * dt);
 
         speed += dv;
-        if(speed > maxspeed) speed = MAX(speed - accel * dt, maxspeed);
-        else if(speed < -maxspeed) speed = MIN(speed + accel * dt, -maxspeed);
         if(abs(speed) < (accel * /*dt **/ 0.001)) {
             speed = 0.0;
         }
