@@ -55,6 +55,7 @@ static bool connect_sta() {
     //if (sta_num_tries >= STA_MAX_TRIES) return false;
     err = cyw43_arch_wifi_connect_timeout_ms(sta_ssid, sta_password, CYW43_AUTH_WPA2_AES_PSK, 30000);
     //sta_error_codes[sta_num_tries++] = err;
+    sta_num_tries++;
     if(err == PICO_OK) wifi_is_sta = 1;
     return err == PICO_OK;
 }

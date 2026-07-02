@@ -43,7 +43,7 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
         WIFI_SSID=\"${WIFI_SSID}\"
         WIFI_PASSWORD=\"${WIFI_PASSWORD}\"
         WIFI_IPADDR_D=${WIFI_IPADDR_D}
-        PICO_CRT0_IMAGE_TYPE_TBYB=1
+        #PICO_CRT0_IMAGE_TYPE_TBYB=1
         )
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
