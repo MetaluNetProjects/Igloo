@@ -62,6 +62,7 @@ public:
     }
 
     void goto_pwm_ms(int p, int ms) {
+        if(ms < 1) ms = 1;
         pwm_target = p;
         accel = ((pwm_target - pwm) * period_ms) / abs(ms);
         int accel_max = (32768 * period_ms) / full_scale_ms;

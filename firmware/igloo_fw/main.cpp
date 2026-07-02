@@ -58,9 +58,9 @@ Motor motor{PIN_MOT_A, PIN_MOT_B, PIN_MOT_PWM};
 // encoder on J2: 4=A 5=B 6= 7=
 Encoder encoder(PIN_ENC_A, PIN_ENC_B);
 
-float position;
-float pwm;
-float setPoint;
+float position = 0.0;
+float pwm = 0.0;
+float setPoint = 0.0;
 
 PID pid(&position, &pwm, &setPoint, PID_KP, PID_KI, PID_KD, P_ON_E, DIRECT);
 Ramp ramp(RAMP_ACCEL, RAMP_MAXSPEED);
@@ -72,7 +72,7 @@ float play_ms_step = 10.0;
 
 float speed_before_error = 0.0;
 
-enum class State{manual, ramp, table, tableramp, error, recover, none} state = State::manual, next_state = State::none;
+enum class State{manual = 0, ramp, table, tableramp, error, recover, none} state = State::manual, next_state = State::none;
 
 const char *state_name(State s) {
     const char* name;
@@ -123,6 +123,10 @@ void setup() {
     pid.SetOutputLimits(-32767.0, 32767.0);
     pid.SetSampleTime(5);
     table.setup();
+    tableramp.set(0);
+    encoder.set_count(0);
+    setPoint = 0;
+    next_state = State::tableramp;
 }
 
 float get_vbatt() {
@@ -342,10 +346,11 @@ void state_update() {
                 table.play_at(play_time_ms, play_ms_step);
                 break;
             case State::tableramp:
-                tableramp.stop();
+                //tableramp.stop();
                 tableramp.set(0);
                 encoder.set_count(0);
                 setPoint = 0;
+                pwm = 0;
                 enableMotorControl(true);
                 fraise_printf("rstep 0\n");
                 //pid.SetMode(1);
@@ -396,14 +401,15 @@ void state_update() {
 }
 
 void state_prepare_change(int stateid) {
-    switch(stateid) {
-    case 0: next_state = State::manual; break;
+    /*switch(stateid) {
+    case (int)State::manual: next_state = State::manual; break;
     case 1: next_state = State::ramp; break;
     case 2: next_state = State::table; break;
     case 3: next_state = State::tableramp; break;
     case 4: next_state = State::error; break;
     case 5: next_state = State::recover; break;
-    }
+    }*/
+    next_state = (State)stateid;
 }
 
 /*void ramp_to(float dest) {
