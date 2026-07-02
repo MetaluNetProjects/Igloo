@@ -39,8 +39,8 @@ const float TABLERAMP_ACCEL = (TABLERAMP_MAXSPEED / 3);    // steps/s², 3s 0->f
 const int STALLED_TIME_MS = 2000;
 
 // CURRENT SECURITY
-const int OVERCURRENT_MA = 3000;
-const int OVERCURRENT_MS = 4000;
+int OVERCURRENT_MA = 3000;
+int OVERCURRENT_MS = 4000;
 
 // pins definition
 #define PIN_MOT_A       15
@@ -70,7 +70,9 @@ TrajTable table;
 int play_time_ms = 0;
 float play_ms_step = 10.0;
 
-enum class State{manual, ramp, table, tableramp, error, none} state = State::manual, next_state = State::none;
+float speed_before_error = 0.0;
+
+enum class State{manual, ramp, table, tableramp, error, recover, none} state = State::manual, next_state = State::none;
 
 const char *state_name(State s) {
     const char* name;
@@ -80,6 +82,7 @@ const char *state_name(State s) {
         case(State::table): name = "table"; break;
         case(State::tableramp): name = "tableramp"; break;
         case(State::error): name = "error"; break;
+        case(State::recover): name = "recover"; break;
         case(State::none): name = "none"; break;
     }
     return name;
@@ -184,8 +187,10 @@ void motor_check_current() {
         } else if(time_reached(alert_time)) {
             alert_time = at_the_end_of_time;
             enableMotorControl(false);
-            motor.goto_pwm_ms(0, 10);
-            state = next_state = State::error;
+            motor.goto_pwm_ms(pwm = 0, 10);
+            //state = 
+            next_state = State::error;
+            //tableramp.stop();
             fraise_printf("e overcurrent error!\n");
         }
     } else alert_time = at_the_end_of_time;
@@ -236,6 +241,27 @@ void motorcontrol_update() {
     motor_check_current();
 }
 
+bool table_search(int searched, int startpos, int direction) {
+    fraise_printf("l table_search %d %d %d\n", searched, startpos, direction);
+    for(int i = 0; (i < 300) && (startpos + i * direction >= 0) && (startpos + i * direction < table.get_length()); i++) {
+        //fraise_printf("l %d %d\n", startpos + i * direction, table.read(startpos + i * direction));
+        if(abs(table.read(startpos + i * direction) - searched) < 100) {
+            fraise_printf("l table_search OK %d\n", startpos + i * direction);
+            tableramp.set(startpos + i * direction);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool recover_position() {
+    int direction = speed_before_error >= 0.0 ? -1 : 1; // look backward
+    if(table_search(encoder.get_count(), tableramp.get_position(), direction)) return true;
+    // if not found, look forward:
+    if(table_search(encoder.get_count(), tableramp.get_position(), -direction)) return true;
+    return false;
+}
+
 void state_update() {
     static absolute_time_t change_state_time = at_the_end_of_time;
     static State last_next_state = next_state;
@@ -280,6 +306,12 @@ void state_update() {
             }
             break;*/
         case State::error:
+            //tableramp.stop();
+            speed_before_error = tableramp.get_speed();
+            tableramp.set(tableramp.get_position());
+            change_state_time = make_timeout_time_ms(0);
+            break;
+        case State::recover:
             change_state_time = make_timeout_time_ms(0);
             break;
         }
@@ -313,8 +345,19 @@ void state_update() {
                 //pid.SetMode(1);
                 break;
             case State::error:
+                tableramp.stop();
                 enableMotorControl(false);
                 pwm = 0;
+                break;
+            case State::recover:
+                tableramp.stop();
+                if(recover_position()) {
+                    enableMotorControl(true);
+                    fraise_printf("rstep %d\n", (int)tableramp.get_position());
+                    state = State::tableramp;
+                } else {
+                    state = State::error;
+                }
                 break;
             }
         }
@@ -334,6 +377,7 @@ void state_update() {
         break;
    case State::error:
         enableMotorControl(false);
+        //tableramp.stop();
         pwm = 0;
         break;
     }
@@ -352,6 +396,7 @@ void state_prepare_change(int stateid) {
     case 2: next_state = State::table; break;
     case 3: next_state = State::tableramp; break;
     case 4: next_state = State::error; break;
+    case 5: next_state = State::recover; break;
     }
 }
 
@@ -453,6 +498,12 @@ void fraise_receivebytes(const char* data, uint8_t len) {
             I = fraise_get_int32() / 1000.0;
             D = fraise_get_int32() / 1000.0;
             pid.SetTunings(P, I, D);
+        }
+        break;
+    case 120: // CURRENT SECURITY PARAMS
+        {
+            OVERCURRENT_MA = fraise_get_uint16();
+            OVERCURRENT_MS = fraise_get_uint16();
         }
         break;
     case 210: // set encoder
