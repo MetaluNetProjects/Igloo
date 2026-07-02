@@ -74,7 +74,7 @@ public:
     }
 
     int read(int step) {
-        return table[MIN(step, MAX_STEPS - 1)];
+        return table[MIN(step, get_length() - 1)];
     }
 
     int current_value() {
