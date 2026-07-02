@@ -26,6 +26,7 @@ private:
     ip_addr_t last_sender_addr;// = nullptr;
     u16_t return_port = 0;
     u16_t alt_return_port = 0;
+    int table_session = -1;
     struct TableDef {
         bool started = false;
         uint8_t *data = nullptr;
@@ -107,29 +108,40 @@ private:
         case MessageType::table_cont:
         case MessageType::table_end:
             if (p->tot_len > 5) {
+                int session = pbuf_get_at(p, n++);
                 int table_num = pbuf_get_at(p, n++);
-                int offset = (pbuf_get_at(p, n++) << 16) + (pbuf_get_at(p, n++) << 8) + pbuf_get_at(p, n++);
+                int offsetH = pbuf_get_at(p, n++);
+                int offsetM = pbuf_get_at(p, n++);
+                int offsetL = pbuf_get_at(p, n++);
+                int offset = (offsetH << 16) + (offsetM << 8) + offsetL;
                 if(table_num >= NUM_TABLES || tables[table_num].data == nullptr) break;
                 TableDef& table = tables[table_num];
                 if(!table.started && command != MessageType::table_start) break;
                 table.started = (command != MessageType::table_end);
-                if(command == MessageType::table_start) {
+                if(command == MessageType::table_start && session != table_session) {
                     table.received_len = 0;
+                    table_session = session;
                     if(table.start_callback) table.start_callback(table_num, 0);
                 }
+                if(session != table_session) break;
                 int max_len = MAX(table.len - offset, 0);
                 //fraise_printf("l maxlen %d off %d total %d\n", max_len, offset, table.len);
                 max_len = MIN(p->tot_len - n, max_len);
-                int sent = pbuf_copy_partial(p, table.data + offset, max_len, n);
-                table.received_len += sent;
+                int received = pbuf_copy_partial(p, table.data + offset, max_len, n);
+                int len = offset + received;
+                if(table.received_len < len) table.received_len = len;
                 if(command == MessageType::table_end && table.end_callback)
                     table.end_callback(table_num, table.received_len);
 
-                struct pbuf *retp = pbuf_alloc(PBUF_TRANSPORT, 3, PBUF_RAM);
+                struct pbuf *retp = pbuf_alloc(PBUF_TRANSPORT, 7, PBUF_RAM);
                 uint8_t *retbuf = (uint8_t *)retp->payload;
                 retbuf[0] = (uint8_t)command;
-                retbuf[1] = sent >> 8;
-                retbuf[2] = sent & 255;
+                retbuf[1] = (uint8_t)table_session;
+                retbuf[2] = (uint8_t)offsetH;
+                retbuf[3] = (uint8_t)offsetM;
+                retbuf[4] = (uint8_t)offsetL;
+                retbuf[5] = received >> 8;
+                retbuf[6] = received & 255;
                 udp_sendto(server, retp, addr, port);
                 pbuf_free(retp);
             }
