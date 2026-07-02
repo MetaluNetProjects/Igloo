@@ -227,8 +227,14 @@ void motorcontrol_update() {
             int step = tableramp.get_position();
             if(last_step != step) {
                 last_step = step;
-                fraise_printf("rstep %d\n", step);
                 setPoint = table.read(step);
+            }
+            static int last_sent_step = -1;
+            static absolute_time_t next_rstep_send_time = make_timeout_time_ms(0);
+            if((last_sent_step != step) && time_reached(next_rstep_send_time)) {
+                last_sent_step = step;
+                fraise_printf("rstep %d\n", step);
+                next_rstep_send_time = make_timeout_time_ms(50);
             }
             tableramp.compute();
             motor_updatepwm();
