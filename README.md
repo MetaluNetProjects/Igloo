@@ -32,42 +32,40 @@ Dans la *console* de Pd (la fenêtre de texte à droite sur la capture d'écran,
 La fenêtre principale comporte plusieurs parties :
 
 - ### Le RESET
-    Ce bouton permet d'initialiser la position de l'igloo et d'envoyer le programme de la trajectoire aux moteurs.  
+    Ce bouton permet d'initialiser la position de l'igloo et, si besoin, d'envoyer le programme de la trajectoire aux moteurs.  
+    Les boutons "droite" et "gauche" permettent de renvoyer la séquence à l'un des moteurs, si la tentative précédente a échoué.
 
     L'igloo doit être correctement positionné à sa place de départ, avant de confirmer le RESET. A la suite du RESET, l'indicateur **ETAT** doit afficher **PRET** ; dans le cas contraire, cela signifie que l'un des deux moteurs n'est pas connecté ou présente un problème (se reporter aux *Moniteurs* pour avoir des indications sur le problème).
 
 - ### VIEW /EDIT
-    Le bouton **VIEW** permet d'afficher la trajectoire dans une fenêtre graphique. **Ne pas manipuler ce bouton pendant le déplacement réel de l'igloo** (l'ouverture de la fenêtre graphique déclenche l'arrêt des moteurs).
+    Le bouton **VIEW** permet d'afficher la trajectoire dans une fenêtre graphique :
 
-![visu](img/visu.gif)
+    ![visu](img/visu.gif)
 
-Le bouton **EDIT** ouvre la fenêtre d'édition de la trajectoire (cf chapitre *Édition de la trajectoire*).
+    Le bouton **EDIT** ouvre la fenêtre d'édition de la trajectoire (cf chapitre *Édition de la trajectoire*).
 
-- ### Mode Automatique
-    Ce mode permet de lancer la trajectoire en mode automatique, en spécifiant le temps de parcours voulu en secondes.  
-    Ce mode garanti la synchronisation des 2 moteurs, même si la liaison wifi n'est pas très bonne.  
-    Le bouton **PLAY**, dont le nom ne s'affiche que quand l'**ETAT** est **PRET**, est relié sur le *message* `[120(` qui va demander une lecture de la trajectoire en 120 secondes. Il est aussi possible de cliquer directement sur le *message* `[120(` ou sur les autres *messages*, comme `[90(`. Il est aussi possible de changer la valeur des messages ou d'en ajouter d'autres :  
-    - passer en mode *Edition* via le menu *Edition/Mode édition* ou `Ctrl+E`  
-    - cliquer dans un *message* et éditer sa valeur
-    - ou ajouter un nouveau *message* (menu *Ajouter/Message*) avec la valeur désirée, et le connecte sur la case `[s $0-PLAY_IN_N_SECONDS]` (tirer le "fil" en partant du message créé)
-    - sauver le *patch* (*Fichier/Enregistrer* ou `Ctrl+S`)
-    - sortir du mode *Edition* (`Ctrl+E`)
-    
-    Remarque : le temps minimum du parcours (correspondant à la vitesse 100%) est celui indiqué dans la fenêtre *Édition de la trajectoire* : on ne peut pas aller plus vite que la trajectoire programmée, mais on peut aller plus lentement.
+- ### Commande générale
+    Le slider **DESTINATION** permet de commander la destination des moteurs, le long de la trajectoire programmée. La valeur correspond au temps de la séquence originale (dans la fenêtre d'Édition).
 
-    Le bouton **BACK** permet de revenir à l'emplacement de départ après que la trajectoire aie été jouée, ou après l'appui sur **STOP**.
+    Le slider **VITESSE** permet de commander la vitesse globale du déplacement, de 0 à 100% de la vitesse de la séquence originale.
 
-- ### Mode Manuel
-    Ce mode permet de se déplacer librement sur le parcours, soit via une commande directe de position, soit via une commande de vitesse.  
+    Le bouton **REPRISE** permet de tenter de récupérer la lecture, après qu'une erreur ait été détectée et ait nécessité l'arrêt d'urgence ; en général, l'erreur est une surcharge de puissance, vraisemblablement causée par un obstacle sur le parcours.  
+Il peut arriver qu'il faille appuyer plusieurs fois avant que le voyant **PRET** repasse au vert ; dans ce cas, attendre quelques secondes avant de rappuyer sur **REPRISE**.  
+Il peut aussi arriver que les moteurs ne puissent pas récupérer la situation... dans ce cas un RESET est nécessaire.
 
-    Ce mode nécessite une bonne liaison wifi avec les moteurs ; dans le cas contraire, de légères erreurs de trajectoires sont possibles.
+- ### Conduite
+    Ce panneau permet de définir et déclencher un certain nombre de points d'arrêt (début, diago, fond etc.).  
+    Ces points sont définis par une destination et (optionnellement) une vitesse. Plusieurs définitions ("conduites") peuvent exister, par exemple "7m50" et "6m", s'appliquant à différentes trajectoires.  
+    Pour chaque "conduite", on définit, pour chaque point, la destination et la vitesse si elle doit changer :  
+
+    ![conduite-7m50](img/conduite-7m50.png)
 
 - ### Moniteurs
     Ce sont des indicateurs sur l'état des deux moteurs, "droite" et "gauche".  
 
     L'indicateur le plus important est "*connecté*", qui doit s'allumer en vert quand la connexion est établie.  
 
-    Un autre indicateur important est l'état de la charge de la batterie, qui doit toujours être supérieure à 11.5V, idéalement au dessus de 12.5V. Il est important de recharger les batteries le plus souvent possible, et surtout de ne **jamais laisser des batteries se décharger** pendant le stockage. C'est leur "mort" assurée.  
+    Un autre indicateur important est l'état de la charge de la batterie, qui doit toujours être supérieure à 11.5V, idéalement autour de 12.5V. Il est important de recharger les batteries le plus souvent possible, et surtout de ne **jamais laisser des batteries se décharger** pendant le stockage. C'est leur "mort" assurée.  
 
     L'indicateur de courant donne une idée de la force qu'exerce un moteur. Une valeur anormalement élevée (à définir d'après les essais) peut signifier que quelque chose "coince" mécaniquement quelque part.
 
