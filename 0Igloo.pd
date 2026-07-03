@@ -4,7 +4,7 @@
 #X obj 4 2 cnv 20 550 740 empty empty Igloo 20 25 2 40 #404040 #feffc6 0;
 #X obj 141 20 bng 50 250 50 0 \$0-reinit-show-snd \$0-reinit-show-rcv RESET 1 25 0 16 #606060 #ffffff #ffffff;
 #X obj 193 20 cnv 20 130 50 empty empty ETAT: 10 12 0 18 #bbbbbb #404040 0;
-#X obj 196 42 cnv 20 100 25 empty \$0-state-name-canvas PRET 10 12 0 18 #14e814 #404040 0;
+#X obj 196 42 cnv 20 100 25 empty \$0-state-name-canvas PAS\ PRET 10 12 0 18 #fc2828 #404040 0;
 #X obj 20 99 cnv 20 500 290 empty empty Commande\ générale 10 15 2 24 #e0e0e0 #404040 0;
 #X obj 477 19 bng 50 250 50 0 \$0-edit-show-snd \$0-edit-show-rcv EDIT 5 25 0 16 #faff00 #000000 #000000;
 #X text 32 137 début;
@@ -24,7 +24,7 @@
 #X obj 332 101 bng 50 250 50 0 \$0-STOP-snd \$0-STOP-rcv STOP 5 25 0 16 #ff0400 #000000 #000000;
 #X obj 19 696 cnv 20 500 30 empty empty Stuff 10 15 2 24 #e0e0e0 #404040 0;
 #X text 407 701 metalu.net 2026;
-#N canvas 156 686 345 243 STUFF 1;
+#N canvas 156 686 345 243 STUFF 0;
 #X obj 25 67 visu \$0;
 #N canvas 171 556 507 426 CONFIG 0;
 #X msg 83 88 10;
@@ -731,7 +731,7 @@
 #X text 34 253 0%;
 #X obj 455 280 bng 50 250 50 0 \$0-REPRISE-snd \$0-REPRISE-rcv REPRISE -5 -10 0 16 #ff8300 #000000 #000000;
 #X text 453 331 en cas d'erreur seulement, f 9;
-#N canvas 664 595 515 373 CONDUITE-7m50 1;
+#N canvas 664 595 515 373 CONDUITE-7m50 0;
 #X obj 6 9 cnv 20 500 350 empty empty Conduite\ 7m50 10 15 2 24 #e0e0e0 #404040 0;
 #X obj 74 180 bng 40 250 50 0 empty empty empty 0 -10 0 12 #faff00 #000000 #000000;
 #X obj 329 183 bng 40 250 50 0 empty empty empty 0 -10 0 12 #00ff04 #000000 #000000;
@@ -821,7 +821,7 @@
 #X connect 21 0 19 0;
 #X restore 293 432 pd CONDUITE-6m;
 #X obj 126 451 hradio 50 1 0 3 \$0-remote-mode-snd \$0-remote-mode-rcv Conduite:\ 7m50 0 -10 0 12 #faff00 #000000 #000000 0;
-#N canvas 958 234 734 563 config 1;
+#N canvas 958 234 734 563 config 0;
 #X obj 42 36 r \$0-remote-mode-snd;
 #X obj 42 174 s \$0-remote-mode-rcv;
 #X obj 42 61 sel 0 1 2, f 19;
