@@ -45,6 +45,7 @@ La fenêtre principale comporte plusieurs parties :
     Le bouton **EDIT** ouvre la fenêtre d'édition de la trajectoire (cf chapitre *Édition de la trajectoire*).
 
 - ### Commande générale
+
     Le slider **DESTINATION** permet de commander la destination des moteurs, le long de la trajectoire programmée. La valeur correspond au temps de la séquence originale (dans la fenêtre d'Édition).
 
     Le slider **VITESSE** permet de commander la vitesse globale du déplacement, de 0 à 100% de la vitesse de la séquence originale.
@@ -54,9 +55,10 @@ Il peut arriver qu'il faille appuyer plusieurs fois avant que le voyant **PRET**
 Il peut aussi arriver que les moteurs ne puissent pas récupérer la situation... dans ce cas un RESET est nécessaire.
 
 - ### Conduite
-    Ce panneau permet de définir et déclencher un certain nombre de points d'arrêt (début, diago, fond etc.).  
-    Ces points sont définis par une destination et (optionnellement) une vitesse. Plusieurs définitions ("conduites") peuvent exister, par exemple "7m50" et "6m", s'appliquant à différentes trajectoires.  
-    Pour chaque "conduite", on définit, pour chaque point, la destination et la vitesse si elle doit changer :  
+
+    Ce panneau permet de déclencher le déplacement vers un point d'**étape** (début, diago, fond etc.), dans un temps donné en secondes.  
+    Plusieurs "conduites" peuvent être définies, par exemple "7m50" et "6m"; le fichier trajectoire du même nom (ex: "7m50") est automatiquement chargé lorsqu'on choisit une "conduite".  
+    Les **étapes** sont définies lors de l'édition de la trajectoire.
 
     ![conduite-7m50](img/conduite-7m50.png)
 
@@ -88,6 +90,9 @@ La trajectoire est définie par une position de départ et une suite de points, 
 Les boutons **nouveau point** permet de créer un nouveau point **avant** ou **après** le point actuel, le bouton **suppr** de supprimer le point actuel.
 
 Les boutons **PLAY**, **X2** (deux fois plus vite), **X10** ou **STOP** (dix fois plus vite) permettent de lancer ou arrêter l'animation sur la fenêtre graphique, mais n'envoient pas d'instruction aux moteurs. De même le slider **temps actuel** permet de déplacer manuellement la représentation de l'igloo tout au long du parcours.
+
+À un point donné peut être associé le nom d'une **étape** ("diago", "fond" etc.). Attention à ne pas utiliser le même nom pour plusieurs points.  
+Les étapes "start" et "end" sont automatiquement ajoutées (non visibles dans la fenêtre Édition).
 
 ## Fichiers de trajectoire
 
