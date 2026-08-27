@@ -786,10 +786,10 @@
 #X obj 42 214 r \$0-remote-step-snd;
 #X obj 42 240 s remote_control;
 #X obj 43 293 netreceive -u -b 65432;
-#X floatatom 53 406 5 0 0 0 - - - 0;
+#X floatatom 24 482 5 0 0 0 - - - 0;
 #X obj 43 318 oscparse;
 #X obj 43 343 list trim;
-#X obj 43 441 s \$0-remote-step-rcv;
+#X obj 43 459 s \$0-remote-step-rcv;
 #X listbox 126 342 20 0 0 0 - - - 0;
 #X obj 43 369 route position next previous;
 #X obj 531 83 r \$0-remote-step-snd;
@@ -1137,6 +1137,8 @@
 #X connect 24 0 22 0;
 #X connect 25 0 14 0;
 #X restore 22 610 pd CONDUITE-7m;
+#X obj 43 399 list;
+#X obj 43 429 f;
 #X connect 0 0 43 0;
 #X connect 2 0 3 0;
 #X connect 3 0 34 0;
@@ -1147,8 +1149,7 @@
 #X connect 9 0 10 0;
 #X connect 9 0 12 0;
 #X connect 10 0 13 0;
-#X connect 13 0 8 0;
-#X connect 13 0 11 0;
+#X connect 13 0 52 0;
 #X connect 13 1 20 0;
 #X connect 13 2 21 0;
 #X connect 14 0 17 1;
@@ -1183,6 +1184,9 @@
 #X connect 45 0 3 0;
 #X connect 46 0 3 0;
 #X connect 47 0 3 0;
+#X connect 52 0 53 0;
+#X connect 53 0 11 0;
+#X connect 53 0 8 0;
 #X restore 427 405 pd config;
 #X obj 86 533 hradio 45 1 0 8 \$0-remote-step-snd \$0-remote-step-rcv empty -30 25 0 12 #fcfcfc #000000 #000000 0;
 #X text 134 514 diago;
