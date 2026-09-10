@@ -166,7 +166,7 @@
 #X obj 107 252 r \$1-TAB_STEP_MS;
 #X obj 117 623 r \$1-TAB_STEP_MS;
 #X msg 67 111 line 1 \, step;
-#N canvas 190 279 578 422 update_HALTS 1;
+#N canvas 105 560 578 422 update_HALTS 0;
 #X obj 79 28 inlet;
 #X obj 134 25 bng 20 250 50 0 empty empty empty 0 -10 0 12 #fcfcfc #000000 #000000;
 #X msg 168 164 step;
@@ -179,10 +179,10 @@
 #X msg 375 154 0;
 #X obj 243 260 list split 3;
 #X obj 283 286 route symbol;
-#X obj 283 311 pack s f;
+#X obj 283 362 pack s f;
 #X obj 446 151 s \$1-HALTS;
 #X msg 446 124 clear;
-#X obj 283 336 text insert \$1-HALTS 1e+06;
+#X obj 283 387 text insert \$1-HALTS 1e+06;
 #X msg 414 178 list start 0;
 #X obj 97 202 r \$1-TOTAL_TIME;
 #X obj 79 227 f;
@@ -190,6 +190,10 @@
 #X obj 414 100 t b b;
 #X obj 79 53 t b b b, f 49;
 #X msg 79 252 list end \$1;
+#X obj 51 97 bng 20 250 50 0 empty empty empty 0 -10 0 12 #fcfcfc #000000 #000000;
+#X obj 283 311 sel symbol;
+#X msg 378 311 symbol;
+#X obj 378 286 loadbang;
 #X connect 0 0 21 0;
 #X connect 1 0 21 0;
 #X connect 2 0 4 0;
@@ -204,7 +208,7 @@
 #X connect 8 0 12 1;
 #X connect 9 0 8 0;
 #X connect 10 1 11 0;
-#X connect 11 0 12 0;
+#X connect 11 0 24 0;
 #X connect 12 0 15 0;
 #X connect 14 0 13 0;
 #X connect 16 0 15 0;
@@ -215,9 +219,13 @@
 #X connect 20 0 16 0;
 #X connect 20 1 14 0;
 #X connect 21 0 18 0;
+#X connect 21 0 23 0;
 #X connect 21 1 19 0;
 #X connect 21 2 20 0;
 #X connect 22 0 15 0;
+#X connect 24 1 12 0;
+#X connect 25 0 24 1;
+#X connect 26 0 25 0;
 #X restore 551 154 pd update_HALTS;
 #X connect 0 0 42 0;
 #X connect 1 0 106 0;
